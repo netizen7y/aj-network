@@ -3,187 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AJ NETWORK | Admin Dashboard</title>
-
+<title>AJ NETWORK | Management System</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root {
-  --bg:#07111f;
-  --panel:#101e30;
-  --panel2:#15263b;
-  --gold:#d9ad45;
-  --green:#13b981;
-  --text:#f4f7fb;
-  --muted:#9aacc0;
-  --red:#ef5350;
-  --border:#263b53;
+:root{
+--bg:#07111f;--panel:#101e30;--panel2:#15263b;
+--gold:#d9ad45;--green:#13b981;--text:#f4f7fb;
+--muted:#9aacc0;--red:#ef5350;--border:#263b53;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Arial,sans-serif;
-}
-header{
-  background:#0c1929;
-  border-bottom:1px solid var(--border);
-  padding:18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:12px;
-}
-.logo{
-  font-size:22px;
-  font-weight:bold;
-  color:var(--gold);
-}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{background:#0c1929;border-bottom:1px solid var(--border);padding:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-size:22px;font-weight:bold;color:var(--gold)}
 .logo span{color:var(--green)}
-header small{color:var(--muted)}
-button{
-  border:0;
-  border-radius:7px;
-  padding:10px 13px;
-  cursor:pointer;
-  font-weight:bold;
-}
+button{border:0;border-radius:7px;padding:10px 13px;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.5;cursor:not-allowed}
 .primary{background:var(--gold);color:#111}
 .green{background:var(--green);color:#04130e}
 .danger{background:var(--red);color:white}
 .secondary{background:#263b53;color:white}
-button:disabled{opacity:.5;cursor:not-allowed}
 .container{max-width:1200px;margin:auto;padding:18px}
-.login-box{
-  max-width:420px;
-  margin:65px auto;
-  padding:25px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:14px;
-}
-input,select,textarea{
-  width:100%;
-  padding:12px;
-  margin:7px 0 13px;
-  border-radius:7px;
-  border:1px solid var(--border);
-  background:#091626;
-  color:white;
-  outline:none;
-}
+.login-box{max-width:420px;margin:65px auto;padding:25px;background:var(--panel);border:1px solid var(--border);border-radius:14px}
+input,select,textarea{width:100%;padding:12px;margin:7px 0 13px;border-radius:7px;border:1px solid var(--border);background:#091626;color:white;outline:none}
 label{font-size:13px;color:var(--muted)}
 h2,h3{margin-top:0}
 .muted{color:var(--muted)}
-nav{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding:14px 0;
-}
-nav button{
-  background:var(--panel2);
-  color:white;
-  white-space:nowrap;
-}
-nav button.active{
-  background:var(--gold);
-  color:#111;
-}
+nav{display:flex;gap:8px;overflow-x:auto;padding:14px 0}
+nav button{background:var(--panel2);color:white;white-space:nowrap}
+nav button.active{background:var(--gold);color:#111}
 .page{display:none}
 .page.active{display:block}
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:13px;
-  margin-bottom:20px;
-}
-.stat{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:11px;
-  padding:18px;
-}
-.stat strong{
-  display:block;
-  font-size:27px;
-  color:var(--gold);
-  margin-top:8px;
-}
-.card{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:11px;
-  padding:18px;
-  margin-bottom:16px;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:15px;
-}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:13px;margin-bottom:20px}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:18px}
+.stat strong{display:block;font-size:27px;color:var(--gold);margin-top:8px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
 .table-wrap{overflow-x:auto}
-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:650px;
-}
-th,td{
-  text-align:left;
-  padding:12px;
-  border-bottom:1px solid var(--border);
-  font-size:13px;
-}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{text-align:left;padding:12px;border-bottom:1px solid var(--border);font-size:13px}
 th{color:var(--gold)}
 .actions{display:flex;gap:6px;flex-wrap:wrap}
 .actions button{font-size:11px;padding:8px}
-.badge{
-  padding:5px 9px;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:bold;
-}
+.badge{padding:5px 9px;border-radius:20px;font-size:11px;font-weight:bold}
 .pending{background:#59451c;color:#ffd66b}
-.active-status{background:#124d39;color:#6ff0b9}
+.active-status,.online{background:#124d39;color:#6ff0b9}
 .suspended{background:#572a30;color:#ff9ca3}
-.online{background:#124d39;color:#6ff0b9}
 .offline{background:#39465a;color:#d5dfeb}
 .maintenance{background:#59451c;color:#ffd66b}
 .planned{background:#253c5a;color:#9ecaff}
-.search-row{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:10px;
-}
-.notice{
-  padding:12px;
-  background:#132c38;
-  border:1px solid #245448;
-  border-radius:8px;
-  color:#a9f0d0;
-  margin-bottom:15px;
-}
-.error{
-  background:#3a2025;
-  color:#ffb5b5;
-  padding:12px;
-  border-radius:8px;
-  margin-bottom:12px;
-}
-footer{
-  text-align:center;
-  color:var(--muted);
-  padding:30px 10px;
-  font-size:12px;
-}
+.notice{padding:12px;background:#132c38;border:1px solid #245448;border-radius:8px;color:#a9f0d0;margin-bottom:15px}
+.error{background:#3a2025;color:#ffb5b5;padding:12px;border-radius:8px;margin-bottom:12px}
+.search-row{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+footer{text-align:center;color:var(--muted);padding:30px 10px;font-size:12px}
 .hidden{display:none!important}
-@media(max-width:600px){
-  header{align-items:flex-start}
-  .container{padding:12px}
-  .search-row{grid-template-columns:1fr}
-}
+.small-select{min-width:140px;padding:8px;margin:3px 0}
+@media(max-width:600px){header{align-items:flex-start}.container{padding:12px}.search-row{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -192,7 +67,7 @@ footer{
 <header>
   <div>
     <div class="logo">AJ <span>NETWORK</span></div>
-    <small>Network Management System</small>
+    <small class="muted">Network Management System</small>
   </div>
   <button id="logoutBtn" class="danger hidden" onclick="logout()">Logout</button>
 </header>
@@ -200,40 +75,33 @@ footer{
 <div id="loginSection" class="login-box">
   <h2>Administrator Login</h2>
   <p class="muted">Sign in to manage AJ NETWORK.</p>
-
   <div id="loginError"></div>
-
   <form onsubmit="login(event)">
     <label>Email address</label>
     <input id="loginEmail" type="email" required placeholder="Admin email">
-
     <label>Password</label>
     <input id="loginPassword" type="password" required placeholder="Password">
-
     <button class="primary" style="width:100%">Login</button>
   </form>
 </div>
 
 <main id="dashboard" class="container hidden">
 
-  <div class="notice">
-    Administrator access verified. Welcome to AJ NETWORK management.
-  </div>
+  <div class="notice">Administrator access verified. Welcome to AJ NETWORK.</div>
 
   <nav>
     <button class="active" onclick="showPage('home',this)">Dashboard</button>
     <button onclick="showPage('customers',this)">Customers</button>
     <button onclick="showPage('hotspots',this)">Hotspots</button>
     <button onclick="showPage('devices',this)">Devices</button>
+    <button onclick="showPage('assignments',this)">Assignments</button>
     <button onclick="showPage('usage',this)">Data Usage</button>
     <button onclick="showPage('about',this)">About</button>
   </nav>
 
   <!-- DASHBOARD -->
-
   <section id="home" class="page active">
     <h2>Dashboard Overview</h2>
-
     <div class="stats">
       <div class="stat">Customers<strong id="totalCustomers">0</strong></div>
       <div class="stat">Active Customers<strong id="activeCustomers">0</strong></div>
@@ -241,21 +109,14 @@ footer{
       <div class="stat">Devices<strong id="totalDevices">0</strong></div>
       <div class="stat">Usage Records<strong id="totalUsage">0</strong></div>
     </div>
-
     <div class="card">
       <h3>AJ NETWORK System</h3>
-      <p class="muted">
-        Manage customer accounts, network hotspots, connected devices
-        and data usage records from one dashboard.
-      </p>
-      <button class="green" onclick="showPage('customers',document.querySelectorAll('nav button')[1])">
-        Manage Customers
-      </button>
+      <p class="muted">Manage customers, hotspots, devices and device assignments from one dashboard.</p>
+      <button class="green" onclick="goTo('customers')">Manage Customers</button>
     </div>
   </section>
 
   <!-- CUSTOMERS -->
-
   <section id="customers" class="page">
     <h2>Customer Account Management</h2>
 
@@ -268,37 +129,21 @@ footer{
 
     <div class="card">
       <h3>Register New Customer</h3>
-
       <form onsubmit="addCustomer(event)">
         <div class="grid">
-          <div>
-            <label>Customer full name *</label>
-            <input id="customerName" required placeholder="Full name">
-          </div>
-          <div>
-            <label>Phone number *</label>
-            <input id="customerPhone" required placeholder="+256...">
-          </div>
-          <div>
-            <label>Email address</label>
-            <input id="customerEmail" type="email" placeholder="Optional">
-          </div>
-          <div>
-            <label>Address / Location</label>
-            <input id="customerAddress" placeholder="Customer location">
-          </div>
+          <div><label>Full name *</label><input id="customerName" required></div>
+          <div><label>Phone number *</label><input id="customerPhone" required placeholder="+256..."></div>
+          <div><label>Email address</label><input id="customerEmail" type="email"></div>
+          <div><label>Address / Location</label><input id="customerAddress"></div>
         </div>
-
         <button class="green">Register Customer</button>
       </form>
     </div>
 
     <div class="card">
       <h3>Customer Accounts</h3>
-
       <div class="search-row">
         <input id="customerSearch" placeholder="Search name or phone..." oninput="renderCustomers()">
-
         <select id="customerFilter" onchange="renderCustomers()">
           <option value="all">All accounts</option>
           <option value="pending">Pending</option>
@@ -306,41 +151,25 @@ footer{
           <option value="suspended">Suspended</option>
         </select>
       </div>
-
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>Customer</th>
-              <th>Phone</th>
-              <th>Email</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="customerRows">
-            <tr><td colspan="5">Loading customers...</td></tr>
-          </tbody>
+          <thead><tr><th>Customer</th><th>Phone</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="customerRows"></tbody>
         </table>
       </div>
     </div>
   </section>
 
   <!-- HOTSPOTS -->
-
   <section id="hotspots" class="page">
     <h2>Hotspot Management</h2>
-
     <div class="card">
       <h3>Register Hotspot</h3>
-
       <form onsubmit="addHotspot(event)">
         <label>Hotspot name</label>
         <input id="hotspotName" required placeholder="AJ Community Wi-Fi">
-
         <label>Location</label>
         <input id="hotspotLocation" required placeholder="Kampala">
-
         <label>Status</label>
         <select id="hotspotStatus">
           <option value="planned">Planned</option>
@@ -348,18 +177,14 @@ footer{
           <option value="offline">Offline</option>
           <option value="maintenance">Maintenance</option>
         </select>
-
         <button class="green">Register Hotspot</button>
       </form>
     </div>
-
     <div class="card">
       <h3>Registered Hotspots</h3>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr><th>Name</th><th>Location</th><th>Status</th><th>Created</th></tr>
-          </thead>
+          <thead><tr><th>Name</th><th>Location</th><th>Status</th><th>Created</th></tr></thead>
           <tbody id="hotspotRows"></tbody>
         </table>
       </div>
@@ -367,27 +192,28 @@ footer{
   </section>
 
   <!-- DEVICES -->
-
   <section id="devices" class="page">
     <h2>Device Management</h2>
-
     <div class="card">
-      <h3>Register Device</h3>
-
+      <h3>Register and Assign Device</h3>
       <form onsubmit="addDevice(event)">
         <label>Device name *</label>
-        <input id="deviceName" required placeholder="AJ Test Router">
+        <input id="deviceName" required placeholder="Router name">
 
         <label>MAC address</label>
         <input id="deviceMac" placeholder="Optional">
 
-        <label>Customer ID</label>
-        <input id="deviceCustomer" placeholder="Optional customer UUID">
+        <label>Assign to customer</label>
+        <select id="deviceCustomer">
+          <option value="">No customer assigned</option>
+        </select>
 
-        <label>Hotspot ID</label>
-        <input id="deviceHotspot" placeholder="Optional hotspot UUID">
+        <label>Assign to hotspot</label>
+        <select id="deviceHotspot">
+          <option value="">No hotspot assigned</option>
+        </select>
 
-        <label>Status</label>
+        <label>Device status</label>
         <select id="deviceStatus">
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
@@ -399,6 +225,7 @@ footer{
 
     <div class="card">
       <h3>Registered Devices</h3>
+      <p class="muted">You can change the customer or hotspot assigned to an existing device.</p>
       <div class="table-wrap">
         <table>
           <thead>
@@ -410,22 +237,35 @@ footer{
     </div>
   </section>
 
-  <!-- DATA USAGE -->
+  <!-- ASSIGNMENTS -->
+  <section id="assignments" class="page">
+    <h2>Customer-to-Device Assignments</h2>
+    <div class="card">
+      <h3>View Customer Devices</h3>
+      <label>Select customer</label>
+      <select id="assignmentCustomer" onchange="renderCustomerDevices()">
+        <option value="">Choose a customer</option>
+      </select>
+      <div id="customerDeviceResults" class="muted">Select a customer to view assigned devices.</div>
+    </div>
+    <div class="card">
+      <h3>Assignment Summary</h3>
+      <div class="stats">
+        <div class="stat">Assigned Devices<strong id="assignedCount">0</strong></div>
+        <div class="stat">Unassigned Devices<strong id="unassignedCount">0</strong></div>
+      </div>
+      <p class="muted">Assignments are saved in your Supabase database.</p>
+    </div>
+  </section>
 
+  <!-- DATA USAGE -->
   <section id="usage" class="page">
     <h2>Data Usage</h2>
-
     <div class="card">
-      <p class="muted">
-        Usage records currently come from your Supabase database.
-        Live router monitoring has not yet been connected.
-      </p>
-
+      <p class="muted">Usage records currently come from your Supabase database. Live router monitoring has not yet been connected.</p>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr><th>Download (MB)</th><th>Upload (MB)</th><th>Recorded At</th></tr>
-          </thead>
+          <thead><tr><th>Download (MB)</th><th>Upload (MB)</th><th>Recorded At</th></tr></thead>
           <tbody id="usageRows"></tbody>
         </table>
       </div>
@@ -433,22 +273,12 @@ footer{
   </section>
 
   <!-- ABOUT -->
-
   <section id="about" class="page">
     <div class="card">
       <h2>About AJ NETWORK</h2>
-      <p>
-        AJ NETWORK is a developing connectivity and technology project
-        focused on providing internet access and digital services.
-      </p>
-      <p class="muted">
-        Current system: Website dashboard, administrator authentication
-        and Supabase database.
-      </p>
-      <p class="muted">
-        Physical network equipment and live internet service
-        integration are future development stages.
-      </p>
+      <p>AJ NETWORK is a developing connectivity and technology project focused on internet access and digital services.</p>
+      <p class="muted">Current system: Website dashboard, administrator authentication and Supabase database.</p>
+      <p class="muted">Physical network equipment and live internet service integration are future development stages.</p>
     </div>
   </section>
 
@@ -457,72 +287,64 @@ footer{
 <footer>AJ NETWORK © 2026 | Network Management System</footer>
 
 <script>
-const SUPABASE_URL = "https://hdmdsxwrkwywnjzhuxzc.supabase.co";
-const SUPABASE_KEY = "sb_publishable_eMEMMX4hXp4iXzeXauOemw_08bycD8o";
+const SUPABASE_URL="https://hdmdsxwrkwywnjzhuxzc.supabase.co";
+const SUPABASE_KEY="sb_publishable_eMEMMX4hXp4iXzeXauOemw_08bycD8o";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-
-let customers = [];
-let devices = [];
-let hotspots = [];
-let currentUser = null;
-
-function message(id,text){
-  document.getElementById(id).innerHTML =
-    '<div class="error">'+escapeHTML(text)+'</div>';
-}
+let customers=[];
+let devices=[];
+let hotspots=[];
+let currentUser=null;
 
 function escapeHTML(value){
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
+  return String(value ?? "").replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
   })[char]);
+}
+
+function goTo(page){
+  const buttons=[...document.querySelectorAll("nav button")];
+  const index=["home","customers","hotspots","devices","assignments","usage","about"].indexOf(page);
+  showPage(page,buttons[index]);
 }
 
 function showPage(page,button){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(page).classList.add("active");
-
   document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-  if(button) button.classList.add("active");
+  if(button)button.classList.add("active");
 
-  if(page==="customers") loadCustomers();
-  if(page==="hotspots") loadHotspots();
-  if(page==="devices") loadDevices();
-  if(page==="usage") loadUsage();
+  if(page==="customers")loadCustomers();
+  if(page==="hotspots")loadHotspots();
+  if(page==="devices")loadDevices();
+  if(page==="assignments"){
+    loadCustomers().then(loadDevices).then(renderCustomerDevices);
+  }
+  if(page==="usage")loadUsage();
 }
 
 async function login(event){
   event.preventDefault();
-
-  const errorBox=document.getElementById("loginError");
-  errorBox.innerHTML="";
+  document.getElementById("loginError").innerHTML="";
 
   const email=document.getElementById("loginEmail").value.trim();
   const password=document.getElementById("loginPassword").value;
 
-  const {data,error}=await db.auth.signInWithPassword({
-    email,
-    password
-  });
+  const {data,error}=await db.auth.signInWithPassword({email,password});
 
   if(error){
-    message("loginError",error.message);
+    document.getElementById("loginError").innerHTML=
+      `<div class="error">${escapeHTML(error.message)}</div>`;
     return;
   }
 
   const {data:profile,error:profileError}=await db
-    .from("profiles")
-    .select("role")
-    .eq("id",data.user.id)
-    .single();
+    .from("profiles").select("role").eq("id",data.user.id).single();
 
   if(profileError || profile?.role!=="admin"){
     await db.auth.signOut();
-    message("loginError","Administrator access required.");
+    document.getElementById("loginError").innerHTML=
+      '<div class="error">Administrator access required.</div>';
     return;
   }
 
@@ -534,10 +356,9 @@ function openDashboard(){
   document.getElementById("loginSection").classList.add("hidden");
   document.getElementById("dashboard").classList.remove("hidden");
   document.getElementById("logoutBtn").classList.remove("hidden");
-
   loadDashboard();
-  loadCustomers();
-  loadHotspots();
+  loadCustomers().then(refreshDropdowns);
+  loadHotspots().then(refreshDropdowns);
   loadDevices();
 }
 
@@ -548,16 +369,11 @@ async function logout(){
 
 async function checkSession(){
   const {data}=await db.auth.getSession();
-
-  if(!data.session) return;
+  if(!data.session)return;
 
   const user=data.session.user;
-
   const {data:profile,error}=await db
-    .from("profiles")
-    .select("role")
-    .eq("id",user.id)
-    .single();
+    .from("profiles").select("role").eq("id",user.id).single();
 
   if(error || profile?.role!=="admin"){
     await db.auth.signOut();
@@ -570,76 +386,57 @@ async function checkSession(){
 
 async function loadDashboard(){
   const tables=["customers","hotspots","devices","data_usage"];
-
   const results=await Promise.all(
-    tables.map(table=>db.from(table).select("*",{count:"exact",head:true}))
+    tables.map(t=>db.from(t).select("*",{count:"exact",head:true}))
   );
 
-  document.getElementById("totalCustomers").textContent=results[0].count ?? 0;
-  document.getElementById("totalHotspots").textContent=results[1].count ?? 0;
-  document.getElementById("totalDevices").textContent=results[2].count ?? 0;
-  document.getElementById("totalUsage").textContent=results[3].count ?? 0;
+  document.getElementById("totalCustomers").textContent=results[0].count??0;
+  document.getElementById("totalHotspots").textContent=results[1].count??0;
+  document.getElementById("totalDevices").textContent=results[2].count??0;
+  document.getElementById("totalUsage").textContent=results[3].count??0;
 
-  const {data}=await db
-    .from("customers")
-    .select("id")
-    .eq("status","active");
-
-  document.getElementById("activeCustomers").textContent=data?.length ?? 0;
+  const {data}=await db.from("customers").select("id").eq("status","active");
+  document.getElementById("activeCustomers").textContent=data?.length??0;
 }
 
 /* CUSTOMER MANAGEMENT */
 
 async function loadCustomers(){
-  const {data,error}=await db
-    .from("customers")
-    .select("*")
-    .order("created_at",{ascending:false});
+  const {data,error}=await db.from("customers")
+    .select("*").order("created_at",{ascending:false});
 
   if(error){
-    document.getElementById("customerRows").innerHTML=
-      `<tr><td colspan="5">${escapeHTML(error.message)}</td></tr>`;
+    console.error(error);
     return;
   }
 
-  customers=data || [];
+  customers=data||[];
   renderCustomers();
   updateCustomerStats();
+  refreshDropdowns();
 }
 
 function updateCustomerStats(){
   document.getElementById("customerTotal").textContent=customers.length;
-
-  document.getElementById("customerPending").textContent=
-    customers.filter(c=>c.status==="pending").length;
-
-  document.getElementById("customerActive").textContent=
-    customers.filter(c=>c.status==="active").length;
-
-  document.getElementById("customerSuspended").textContent=
-    customers.filter(c=>c.status==="suspended").length;
-
-  document.getElementById("activeCustomers").textContent=
-    customers.filter(c=>c.status==="active").length;
-
+  document.getElementById("customerPending").textContent=customers.filter(c=>c.status==="pending").length;
+  document.getElementById("customerActive").textContent=customers.filter(c=>c.status==="active").length;
+  document.getElementById("customerSuspended").textContent=customers.filter(c=>c.status==="suspended").length;
   document.getElementById("totalCustomers").textContent=customers.length;
+  document.getElementById("activeCustomers").textContent=customers.filter(c=>c.status==="active").length;
 }
 
 function renderCustomers(){
-  const search=(document.getElementById("customerSearch")?.value || "").toLowerCase();
-  const filter=document.getElementById("customerFilter")?.value || "all";
+  const search=(document.getElementById("customerSearch")?.value||"").toLowerCase();
+  const filter=document.getElementById("customerFilter")?.value||"all";
 
   const filtered=customers.filter(c=>{
-    const matchesSearch=
-      (c.full_name || "").toLowerCase().includes(search) ||
-      (c.phone || "").toLowerCase().includes(search);
-
-    const matchesStatus=filter==="all" || c.status===filter;
-
-    return matchesSearch && matchesStatus;
+    const matches=(c.full_name||"").toLowerCase().includes(search)||
+      (c.phone||"").toLowerCase().includes(search);
+    return matches&&(filter==="all"||c.status===filter);
   });
 
   const rows=document.getElementById("customerRows");
+  if(!rows)return;
 
   if(!filtered.length){
     rows.innerHTML='<tr><td colspan="5">No matching customers found.</td></tr>';
@@ -647,35 +444,26 @@ function renderCustomers(){
   }
 
   rows.innerHTML=filtered.map(c=>{
-    const statusClass=c.status==="active"
-      ? "active-status"
-      : c.status==="suspended" ? "suspended" : "pending";
+    const cls=c.status==="active"?"active-status":
+      c.status==="suspended"?"suspended":"pending";
 
-    let statusButton="";
+    const statusButton=c.status==="pending"
+      ?`<button class="green" onclick="changeCustomerStatus('${c.id}','active')">Activate</button>`
+      :c.status==="active"
+      ?`<button class="secondary" onclick="changeCustomerStatus('${c.id}','suspended')">Suspend</button>`
+      :`<button class="green" onclick="changeCustomerStatus('${c.id}','active')">Reactivate</button>`;
 
-    if(c.status==="pending"){
-      statusButton=`<button class="green" onclick="changeCustomerStatus('${c.id}','active')">Activate</button>`;
-    }else if(c.status==="active"){
-      statusButton=`<button class="secondary" onclick="changeCustomerStatus('${c.id}','suspended')">Suspend</button>`;
-    }else{
-      statusButton=`<button class="green" onclick="changeCustomerStatus('${c.id}','active')">Reactivate</button>`;
-    }
-
-    return `
-      <tr>
-        <td>${escapeHTML(c.full_name)}</td>
-        <td>${escapeHTML(c.phone)}</td>
-        <td>${escapeHTML(c.email || "-")}</td>
-        <td><span class="badge ${statusClass}">${escapeHTML(c.status)}</span></td>
-        <td>
-          <div class="actions">
-            ${statusButton}
-            <button class="secondary" onclick="editCustomer('${c.id}')">Edit</button>
-            <button class="danger" onclick="deleteCustomer('${c.id}')">Delete</button>
-          </div>
-        </td>
-      </tr>
-    `;
+    return `<tr>
+      <td>${escapeHTML(c.full_name)}</td>
+      <td>${escapeHTML(c.phone)}</td>
+      <td>${escapeHTML(c.email||"-")}</td>
+      <td><span class="badge ${cls}">${escapeHTML(c.status)}</span></td>
+      <td><div class="actions">
+        ${statusButton}
+        <button class="secondary" onclick="editCustomer('${c.id}')">Edit</button>
+        <button class="danger" onclick="deleteCustomer('${c.id}')">Delete</button>
+      </div></td>
+    </tr>`;
   }).join("");
 }
 
@@ -685,112 +473,73 @@ async function addCustomer(event){
   const customer={
     full_name:document.getElementById("customerName").value.trim(),
     phone:document.getElementById("customerPhone").value.trim(),
-    email:document.getElementById("customerEmail").value.trim() || null,
-    address:document.getElementById("customerAddress").value.trim() || null
+    email:document.getElementById("customerEmail").value.trim()||null,
+    address:document.getElementById("customerAddress").value.trim()||null
   };
 
   const {error}=await db.from("customers").insert([customer]);
-
-  if(error){
-    alert("Customer registration failed: "+error.message);
-    return;
-  }
+  if(error){alert("Registration failed: "+error.message);return;}
 
   event.target.reset();
-  alert("Customer successfully registered. Account status: Pending.");
-
+  alert("Customer registered. Account status: Pending.");
   await loadCustomers();
   await loadDashboard();
 }
 
-async function changeCustomerStatus(id,newStatus){
+async function changeCustomerStatus(id,status){
   const customer=customers.find(c=>c.id===id);
-  if(!customer) return;
+  if(!customer)return;
 
-  const action={
-    active:"activate",
-    suspended:"suspend"
-  }[newStatus];
+  if(!confirm(`Change ${customer.full_name}'s account status to ${status}?`))return;
 
-  if(!confirm(`Are you sure you want to ${action} ${customer.full_name}?`)){
-    return;
-  }
+  const {error}=await db.from("customers").update({status}).eq("id",id);
+  if(error){alert(error.message);return;}
 
-  const {error}=await db
-    .from("customers")
-    .update({status:newStatus})
-    .eq("id",id);
-
-  if(error){
-    alert("Status update failed: "+error.message);
-    return;
-  }
-
-  alert("Customer account updated successfully.");
+  alert("Customer status updated.");
   await loadCustomers();
   await loadDashboard();
 }
 
 async function editCustomer(id){
-  const customer=customers.find(c=>c.id===id);
-  if(!customer) return;
+  const c=customers.find(x=>x.id===id);
+  if(!c)return;
 
-  const name=prompt("Customer full name:",customer.full_name);
-  if(name===null) return;
+  const name=prompt("Customer full name:",c.full_name);
+  if(name===null)return;
+  const phone=prompt("Phone number:",c.phone);
+  if(phone===null)return;
+  const email=prompt("Email:",c.email||"");
+  if(email===null)return;
+  const address=prompt("Address:",c.address||"");
+  if(address===null)return;
 
-  const phone=prompt("Customer phone:",customer.phone);
-  if(phone===null) return;
-
-  const email=prompt("Customer email:",customer.email || "");
-  if(email===null) return;
-
-  const address=prompt("Customer address:",customer.address || "");
-  if(address===null) return;
-
-  if(!name.trim() || !phone.trim()){
-    alert("Name and phone number are required.");
+  if(!name.trim()||!phone.trim()){
+    alert("Name and phone are required.");
     return;
   }
 
-  const {error}=await db
-    .from("customers")
-    .update({
-      full_name:name.trim(),
-      phone:phone.trim(),
-      email:email.trim() || null,
-      address:address.trim() || null
-    })
-    .eq("id",id);
+  const {error}=await db.from("customers").update({
+    full_name:name.trim(),phone:phone.trim(),
+    email:email.trim()||null,address:address.trim()||null
+  }).eq("id",id);
 
-  if(error){
-    alert("Customer update failed: "+error.message);
-    return;
-  }
-
+  if(error){alert(error.message);return;}
   alert("Customer details updated.");
   await loadCustomers();
 }
 
 async function deleteCustomer(id){
-  const customer=customers.find(c=>c.id===id);
-  if(!customer) return;
+  const c=customers.find(x=>x.id===id);
+  if(!c)return;
 
-  if(!confirm(`Permanently delete ${customer.full_name}? This cannot be undone.`)){
-    return;
-  }
+  if(!confirm(`Permanently delete ${c.full_name}? Assigned device records will remain but become unassigned.`))return;
 
-  const {error}=await db
-    .from("customers")
-    .delete()
-    .eq("id",id);
+  const {error}=await db.from("customers").delete().eq("id",id);
+  if(error){alert(error.message);return;}
 
-  if(error){
-    alert("Customer deletion failed: "+error.message);
-    return;
-  }
-
-  alert("Customer account deleted.");
+  alert("Customer deleted.");
   await loadCustomers();
+  await loadDevices();
   await loadDashboard();
 }
 
@@ -799,151 +548,270 @@ async function deleteCustomer(id){
 async function addHotspot(event){
   event.preventDefault();
 
-  const hotspot={
+  const {error}=await db.from("hotspots").insert([{
     name:document.getElementById("hotspotName").value.trim(),
     location:document.getElementById("hotspotLocation").value.trim(),
     status:document.getElementById("hotspotStatus").value
-  };
+  }]);
 
-  const {error}=await db.from("hotspots").insert([hotspot]);
-
-  if(error){
-    alert("Hotspot registration failed: "+error.message);
-    return;
-  }
+  if(error){alert("Hotspot registration failed: "+error.message);return;}
 
   event.target.reset();
-  alert("Hotspot registered successfully.");
-
+  alert("Hotspot registered.");
   await loadHotspots();
   await loadDashboard();
 }
 
 async function loadHotspots(){
-  const {data,error}=await db
-    .from("hotspots")
-    .select("*")
-    .order("created_at",{ascending:false});
+  const {data,error}=await db.from("hotspots")
+    .select("*").order("created_at",{ascending:false});
+
+  if(error){console.error(error);return;}
+  hotspots=data||[];
 
   const rows=document.getElementById("hotspotRows");
-
-  if(error){
-    rows.innerHTML=`<tr><td colspan="4">${escapeHTML(error.message)}</td></tr>`;
-    return;
-  }
-
-  hotspots=data || [];
-
-  rows.innerHTML=hotspots.map(h=>`
-    <tr>
+  if(rows){
+    rows.innerHTML=hotspots.map(h=>`<tr>
       <td>${escapeHTML(h.name)}</td>
       <td>${escapeHTML(h.location)}</td>
       <td><span class="badge ${escapeHTML(h.status)}">${escapeHTML(h.status)}</span></td>
-      <td>${h.created_at ? new Date(h.created_at).toLocaleDateString() : "-"}</td>
-    </tr>
-  `).join("") || '<tr><td colspan="4">No hotspots registered.</td></tr>';
+      <td>${h.created_at?new Date(h.created_at).toLocaleDateString():"-"}</td>
+    </tr>`).join("")||'<tr><td colspan="4">No hotspots registered.</td></tr>';
+  }
 
   document.getElementById("totalHotspots").textContent=hotspots.length;
+  refreshDropdowns();
 }
 
-/* DEVICES */
+/* CUSTOMER AND HOTSPOT DROPDOWNS */
+
+function refreshDropdowns(){
+  const customerSelect=document.getElementById("deviceCustomer");
+  const hotspotSelect=document.getElementById("deviceHotspot");
+  const assignmentSelect=document.getElementById("assignmentCustomer");
+
+  if(customerSelect){
+    const old=customerSelect.value;
+    customerSelect.innerHTML='<option value="">No customer assigned</option>'+
+      customers.map(c=>`<option value="${c.id}">${escapeHTML(c.full_name)} — ${escapeHTML(c.phone)}</option>`).join("");
+    if(customers.some(c=>c.id===old))customerSelect.value=old;
+  }
+
+  if(hotspotSelect){
+    const old=hotspotSelect.value;
+    hotspotSelect.innerHTML='<option value="">No hotspot assigned</option>'+
+      hotspots.map(h=>`<option value="${h.id}">${escapeHTML(h.name)} — ${escapeHTML(h.location)}</option>`).join("");
+    if(hotspots.some(h=>h.id===old))hotspotSelect.value=old;
+  }
+
+  if(assignmentSelect){
+    const old=assignmentSelect.value;
+    assignmentSelect.innerHTML='<option value="">Choose a customer</option>'+
+      customers.map(c=>`<option value="${c.id}">${escapeHTML(c.full_name)} — ${escapeHTML(c.phone)}</option>`).join("");
+    if(customers.some(c=>c.id===old))assignmentSelect.value=old;
+  }
+}
+
+/* DEVICE MANAGEMENT AND ASSIGNMENTS */
 
 async function addDevice(event){
   event.preventDefault();
 
   const device={
     device_name:document.getElementById("deviceName").value.trim(),
-    mac_address:document.getElementById("deviceMac").value.trim() || null,
-    customer_id:document.getElementById("deviceCustomer").value.trim() || null,
-    hotspot_id:document.getElementById("deviceHotspot").value.trim() || null,
+    mac_address:document.getElementById("deviceMac").value.trim()||null,
+    customer_id:document.getElementById("deviceCustomer").value||null,
+    hotspot_id:document.getElementById("deviceHotspot").value||null,
     status:document.getElementById("deviceStatus").value
   };
 
   const {error}=await db.from("devices").insert([device]);
 
-  if(error){
-    alert("Device registration failed: "+error.message);
-    return;
-  }
+  if(error){alert("Device registration failed: "+error.message);return;}
 
   event.target.reset();
-  alert("Device registered successfully.");
-
+  alert("Device registered and assigned successfully.");
   await loadDevices();
   await loadDashboard();
+  renderCustomerDevices();
 }
 
 async function loadDevices(){
-  const {data,error}=await db
-    .from("devices")
-    .select("*")
-    .order("created_at",{ascending:false});
-
-  const rows=document.getElementById("deviceRows");
+  const {data,error}=await db.from("devices")
+    .select("*").order("created_at",{ascending:false});
 
   if(error){
-    rows.innerHTML=`<tr><td colspan="6">${escapeHTML(error.message)}</td></tr>`;
+    console.error(error);
+    const rows=document.getElementById("deviceRows");
+    if(rows)rows.innerHTML=`<tr><td colspan="6">${escapeHTML(error.message)}</td></tr>`;
     return;
   }
 
-  devices=data || [];
+  devices=data||[];
+  renderDevices();
+  updateAssignmentStats();
+  renderCustomerDevices();
+}
 
-  rows.innerHTML=devices.map(d=>`
-    <tr>
+function customerName(id){
+  const c=customers.find(x=>x.id===id);
+  return c?c.full_name:"Unassigned";
+}
+
+function hotspotName(id){
+  const h=hotspots.find(x=>x.id===id);
+  return h?h.name:"Unassigned";
+}
+
+function renderDevices(){
+  const rows=document.getElementById("deviceRows");
+  if(!rows)return;
+
+  if(!devices.length){
+    rows.innerHTML='<tr><td colspan="6">No devices registered.</td></tr>';
+    return;
+  }
+
+  rows.innerHTML=devices.map(d=>{
+    const customerOptions='<option value="">Unassigned customer</option>'+
+      customers.map(c=>`<option value="${c.id}" ${d.customer_id===c.id?"selected":""}>${escapeHTML(c.full_name)}</option>`).join("");
+
+    const hotspotOptions='<option value="">Unassigned hotspot</option>'+
+      hotspots.map(h=>`<option value="${h.id}" ${d.hotspot_id===h.id?"selected":""}>${escapeHTML(h.name)}</option>`).join("");
+
+    return `<tr>
       <td>${escapeHTML(d.device_name)}</td>
-      <td>${escapeHTML(d.mac_address || "-")}</td>
-      <td>${escapeHTML(d.customer_id || "-")}</td>
-      <td>${escapeHTML(d.hotspot_id || "-")}</td>
+      <td>${escapeHTML(d.mac_address||"-")}</td>
+      <td>${escapeHTML(customerName(d.customer_id))}</td>
+      <td>${escapeHTML(hotspotName(d.hotspot_id))}</td>
       <td><span class="badge ${d.status==="active"?"active-status":"suspended"}">${escapeHTML(d.status)}</span></td>
       <td>
         <div class="actions">
-          <button class="secondary" onclick="updateDeviceStatus('${d.id}','${d.status==="active"?"inactive":"active"}')">
-            ${d.status==="active"?"Deactivate":"Activate"}
-          </button>
+          <button class="secondary" onclick="editDeviceAssignment('${d.id}')">Change Assignment</button>
+          <button class="secondary" onclick="updateDeviceStatus('${d.id}','${d.status==="active"?"inactive":"active"}')">${d.status==="active"?"Deactivate":"Activate"}</button>
           <button class="danger" onclick="deleteDevice('${d.id}')">Delete</button>
         </div>
+        <div>
+          <select class="small-select" id="assign-c-${d.id}">${customerOptions}</select>
+          <select class="small-select" id="assign-h-${d.id}">${hotspotOptions}</select>
+          <button class="green" onclick="saveDeviceAssignment('${d.id}')">Save Assignment</button>
+        </div>
       </td>
-    </tr>
-  `).join("") || '<tr><td colspan="6">No devices registered.</td></tr>';
-
-  document.getElementById("totalDevices").textContent=devices.length;
+    </tr>`;
+  }).join("");
 }
 
-async function updateDeviceStatus(id,newStatus){
-  const {error}=await db
-    .from("devices")
-    .update({status:newStatus})
-    .eq("id",id);
+async function saveDeviceAssignment(id){
+  const customerId=document.getElementById("assign-c-"+id).value||null;
+  const hotspotId=document.getElementById("assign-h-"+id).value||null;
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+  const {error}=await db.from("devices").update({
+    customer_id:customerId,
+    hotspot_id:hotspotId
+  }).eq("id",id);
 
+  if(error){alert("Assignment failed: "+error.message);return;}
+
+  alert("Device assignment updated successfully.");
+  await loadDevices();
+}
+
+async function editDeviceAssignment(id){
+  const d=devices.find(x=>x.id===id);
+  if(!d)return;
+
+  const customerId=prompt(
+    "Enter the customer UUID to assign, or leave blank to unassign:",
+    d.customer_id||""
+  );
+  if(customerId===null)return;
+
+  const hotspotId=prompt(
+    "Enter the hotspot UUID to assign, or leave blank to unassign:",
+    d.hotspot_id||""
+  );
+  if(hotspotId===null)return;
+
+  const {error}=await db.from("devices").update({
+    customer_id:customerId.trim()||null,
+    hotspot_id:hotspotId.trim()||null
+  }).eq("id",id);
+
+  if(error){alert("Assignment failed: "+error.message);return;}
+  alert("Device assignment updated.");
+  await loadDevices();
+}
+
+async function updateDeviceStatus(id,status){
+  const {error}=await db.from("devices").update({status}).eq("id",id);
+  if(error){alert(error.message);return;}
   await loadDevices();
 }
 
 async function deleteDevice(id){
-  if(!confirm("Delete this device?")) return;
+  if(!confirm("Delete this device?"))return;
 
   const {error}=await db.from("devices").delete().eq("id",id);
+  if(error){alert(error.message);return;}
 
-  if(error){
-    alert(error.message);
+  alert("Device deleted.");
+  await loadDevices();
+  await loadDashboard();
+}
+
+function updateAssignmentStats(){
+  const assigned=devices.filter(d=>d.customer_id).length;
+  document.getElementById("assignedCount").textContent=assigned;
+  document.getElementById("unassignedCount").textContent=devices.length-assigned;
+}
+
+function renderCustomerDevices(){
+  const select=document.getElementById("assignmentCustomer");
+  const results=document.getElementById("customerDeviceResults");
+  if(!select||!results)return;
+
+  const id=select.value;
+  if(!id){
+    results.innerHTML='<p class="muted">Select a customer to view assigned devices.</p>';
     return;
   }
 
-  await loadDevices();
-  await loadDashboard();
+  const customer=customers.find(c=>c.id===id);
+  const assigned=devices.filter(d=>d.customer_id===id);
+
+  if(!customer){
+    results.textContent="Customer not found.";
+    return;
+  }
+
+  if(!assigned.length){
+    results.innerHTML=`<p>No devices assigned to ${escapeHTML(customer.full_name)} yet.</p>`;
+    return;
+  }
+
+  results.innerHTML=`
+    <h3>${escapeHTML(customer.full_name)}</h3>
+    <p class="muted">${escapeHTML(customer.phone)}</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Device</th><th>MAC Address</th><th>Hotspot</th><th>Status</th></tr></thead>
+        <tbody>
+          ${assigned.map(d=>`<tr>
+            <td>${escapeHTML(d.device_name)}</td>
+            <td>${escapeHTML(d.mac_address||"-")}</td>
+            <td>${escapeHTML(hotspotName(d.hotspot_id))}</td>
+            <td>${escapeHTML(d.status)}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
 }
 
 /* DATA USAGE */
 
 async function loadUsage(){
   const rows=document.getElementById("usageRows");
-
-  const {data,error}=await db
-    .from("data_usage")
+  const {data,error}=await db.from("data_usage")
     .select("download_mb,upload_mb,recorded_at")
     .order("recorded_at",{ascending:false});
 
@@ -952,15 +820,13 @@ async function loadUsage(){
     return;
   }
 
-  rows.innerHTML=(data || []).map(u=>`
-    <tr>
-      <td>${escapeHTML(u.download_mb)}</td>
-      <td>${escapeHTML(u.upload_mb)}</td>
-      <td>${u.recorded_at ? new Date(u.recorded_at).toLocaleString() : "-"}</td>
-    </tr>
-  `).join("") || '<tr><td colspan="3">No usage records available.</td></tr>';
+  rows.innerHTML=(data||[]).map(u=>`<tr>
+    <td>${escapeHTML(u.download_mb)}</td>
+    <td>${escapeHTML(u.upload_mb)}</td>
+    <td>${u.recorded_at?new Date(u.recorded_at).toLocaleString():"-"}</td>
+  </tr>`).join("")||'<tr><td colspan="3">No usage records available.</td></tr>';
 
-  document.getElementById("totalUsage").textContent=data?.length ?? 0;
+  document.getElementById("totalUsage").textContent=data?.length??0;
 }
 
 checkSession();
