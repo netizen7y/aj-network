@@ -2,1106 +2,968 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AJ NETWORK | Control Centre</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AJ NETWORK | Admin Dashboard</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root{
---bg:#080d18;
---panel:#111a2b;
---panel2:#19263b;
---gold:#e6b84c;
---green:#16c784;
---text:#f4f6fb;
---muted:#91a0b8;
---border:#29364d;
+:root {
+  --bg:#07111f;
+  --panel:#101e30;
+  --panel2:#15263b;
+  --gold:#d9ad45;
+  --green:#13b981;
+  --text:#f4f7fb;
+  --muted:#9aacc0;
+  --red:#ef5350;
+  --border:#263b53;
 }
 *{box-sizing:border-box}
 body{
-margin:0;
-background:var(--bg);
-color:var(--text);
-font-family:Arial,sans-serif
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
 }
-button,input,select{font:inherit}
-button{cursor:pointer}
-#login{max-width:420px;margin:65px auto;padding:25px}
-.box,.card,.section{
-background:var(--panel);
-border:1px solid var(--border);
-border-radius:12px;
-padding:20px
+header{
+  background:#0c1929;
+  border-bottom:1px solid var(--border);
+  padding:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
 }
 .logo{
-font-size:27px;
-font-weight:900;
-color:var(--gold);
-margin-bottom:5px
+  font-size:22px;
+  font-weight:bold;
+  color:var(--gold);
 }
-.logo span{color:white}
-.subtitle{
-color:var(--muted);
-font-size:13px;
-margin-bottom:25px
+.logo span{color:var(--green)}
+header small{color:var(--muted)}
+button{
+  border:0;
+  border-radius:7px;
+  padding:10px 13px;
+  cursor:pointer;
+  font-weight:bold;
 }
-label{
-display:block;
-color:var(--muted);
-font-size:12px;
-margin-top:15px
+.primary{background:var(--gold);color:#111}
+.green{background:var(--green);color:#04130e}
+.danger{background:var(--red);color:white}
+.secondary{background:#263b53;color:white}
+button:disabled{opacity:.5;cursor:not-allowed}
+.container{max-width:1200px;margin:auto;padding:18px}
+.login-box{
+  max-width:420px;
+  margin:65px auto;
+  padding:25px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
 }
-input,select{
-width:100%;
-padding:13px;
-margin-top:7px;
-background:#0b1424;
-border:1px solid var(--border);
-border-radius:7px;
-color:white
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  margin:7px 0 13px;
+  border-radius:7px;
+  border:1px solid var(--border);
+  background:#091626;
+  color:white;
+  outline:none;
 }
-.action{
-background:var(--gold);
-color:#101827;
-border:0;
-border-radius:7px;
-padding:12px 16px;
-font-weight:bold
+label{font-size:13px;color:var(--muted)}
+h2,h3{margin-top:0}
+.muted{color:var(--muted)}
+nav{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:14px 0;
 }
-.loginbtn{width:100%;margin-top:20px}
-.message{font-size:13px;margin-top:15px;line-height:1.5}
-.error{color:#ff9292}
-.success{color:var(--green)}
-#app{display:none}
-.sidebar{
-position:fixed;
-inset:0 auto 0 0;
-width:220px;
-background:#0d1525;
-border-right:1px solid var(--border);
-padding:20px 14px
+nav button{
+  background:var(--panel2);
+  color:white;
+  white-space:nowrap;
 }
-.tagline{
-font-size:10px;
-color:var(--muted);
-letter-spacing:2px;
-margin-bottom:30px
+nav button.active{
+  background:var(--gold);
+  color:#111;
 }
-.nav button{
-width:100%;
-display:block;
-text-align:left;
-padding:13px;
-margin:4px 0;
-border:0;
-border-radius:8px;
-background:transparent;
-color:#c5cede
-}
-.nav button.active,.nav button:hover{
-background:#1b2940;
-color:var(--gold)
-}
-.main{
-margin-left:220px;
-padding:25px;
-max-width:1500px
-}
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:12px;
-flex-wrap:wrap
-}
-h1{font-size:24px;margin:0 0 7px}
-.muted{color:var(--muted);font-size:13px}
-.badge{
-background:#342b17;
-color:var(--gold);
-padding:9px 12px;
-border-radius:20px;
-font-size:11px
-}
-.notice{
-background:#18253a;
-border:1px solid #34445e;
-padding:13px;
-border-radius:9px;
-margin:20px 0;
-color:#c5d0e1;
-font-size:12px;
-line-height:1.6
-}
-.grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:13px;
-margin:20px 0
-}
-.card small{color:var(--muted);font-size:11px}
-.number{font-size:28px;font-weight:bold;margin:12px 0}
-.green{color:var(--green)}
-.gold{color:var(--gold)}
-.content{
-display:grid;
-grid-template-columns:1.5fr 1fr;
-gap:14px
-}
-.section h2{font-size:16px;margin:0 0 16px}
-.row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
-border-bottom:1px solid var(--border);
-padding:13px 0;
-font-size:13px
-}
-.row:last-child{border:0}
-.status{color:var(--gold);font-size:11px}
 .page{display:none}
 .page.active{display:block}
-.secondary{
-background:var(--panel2);
-color:white;
-border:1px solid var(--border);
-padding:9px 12px;
-border-radius:7px
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:13px;
+  margin-bottom:20px;
 }
-.danger{
-background:#4b2028;
-color:#ffaaaa;
-border:1px solid #74343d;
-padding:8px 11px;
-border-radius:7px
+.stat{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:18px;
 }
-.device-actions{
-display:flex;
-align-items:center;
-gap:7px;
-flex-wrap:wrap;
-margin-top:10px
+.stat strong{
+  display:block;
+  font-size:27px;
+  color:var(--gold);
+  margin-top:8px;
 }
-.device-actions select{
-width:auto;
-min-width:110px;
-padding:8px;
-margin:0
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:18px;
+  margin-bottom:16px;
 }
-.tablewrap{overflow-x:auto}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:15px;
+}
+.table-wrap{overflow-x:auto}
 table{
-width:100%;
-border-collapse:collapse;
-font-size:13px;
-min-width:400px
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px;
 }
 th,td{
-text-align:left;
-padding:12px 8px;
-border-bottom:1px solid var(--border)
+  text-align:left;
+  padding:12px;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
 }
-th{color:var(--muted)}
-.footer{
-text-align:center;
-color:var(--muted);
-font-size:11px;
-margin:30px 0
+th{color:var(--gold)}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.actions button{font-size:11px;padding:8px}
+.badge{
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:bold;
 }
-@media(max-width:850px){
-.sidebar{
-position:relative;
-width:100%;
-height:auto;
-padding:13px
+.pending{background:#59451c;color:#ffd66b}
+.active-status{background:#124d39;color:#6ff0b9}
+.suspended{background:#572a30;color:#ff9ca3}
+.online{background:#124d39;color:#6ff0b9}
+.offline{background:#39465a;color:#d5dfeb}
+.maintenance{background:#59451c;color:#ffd66b}
+.planned{background:#253c5a;color:#9ecaff}
+.search-row{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:10px;
 }
-.tagline{margin-bottom:10px}
-.nav{
-display:flex;
-overflow-x:auto;
-gap:4px
+.notice{
+  padding:12px;
+  background:#132c38;
+  border:1px solid #245448;
+  border-radius:8px;
+  color:#a9f0d0;
+  margin-bottom:15px;
 }
-.nav button{
-white-space:nowrap;
-width:auto;
-padding:10px
+.error{
+  background:#3a2025;
+  color:#ffb5b5;
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:12px;
 }
-.main{margin:0;padding:17px}
-.grid{grid-template-columns:repeat(2,1fr)}
-.content{grid-template-columns:1fr}
+footer{
+  text-align:center;
+  color:var(--muted);
+  padding:30px 10px;
+  font-size:12px;
+}
+.hidden{display:none!important}
+@media(max-width:600px){
+  header{align-items:flex-start}
+  .container{padding:12px}
+  .search-row{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
 
-<!-- ADMIN LOGIN -->
-<div id="login">
- <div class="box">
-  <div class="logo">AJ <span>NETWORK</span></div>
-  <div class="subtitle">ADMINISTRATION CONTROL CENTRE</div>
+<header>
+  <div>
+    <div class="logo">AJ <span>NETWORK</span></div>
+    <small>Network Management System</small>
+  </div>
+  <button id="logoutBtn" class="danger hidden" onclick="logout()">Logout</button>
+</header>
 
+<div id="loginSection" class="login-box">
   <h2>Administrator Login</h2>
+  <p class="muted">Sign in to manage AJ NETWORK.</p>
 
-  <label>Email address</label>
-  <input id="email" type="email" placeholder="Your registered email">
+  <div id="loginError"></div>
 
-  <label>Password</label>
-  <input id="password" type="password" placeholder="Your password">
+  <form onsubmit="login(event)">
+    <label>Email address</label>
+    <input id="loginEmail" type="email" required placeholder="Admin email">
 
-  <button class="action loginbtn" onclick="login()">Sign In</button>
+    <label>Password</label>
+    <input id="loginPassword" type="password" required placeholder="Password">
 
-  <div id="loginMessage" class="message"></div>
- </div>
+    <button class="primary" style="width:100%">Login</button>
+  </form>
 </div>
 
-<!-- MAIN APPLICATION -->
-<div id="app">
+<main id="dashboard" class="container hidden">
 
-<aside class="sidebar">
-
- <div class="logo">AJ <span>NETWORK</span></div>
- <div class="tagline">CONNECTING TOMORROW</div>
-
- <div class="nav">
-  <button class="active" onclick="showPage('dashboard',this)">▦ Dashboard</button>
-  <button onclick="showPage('customers',this)">♙ Customers</button>
-  <button onclick="showPage('hotspots',this)">◉ Hotspots</button>
-  <button onclick="showPage('devices',this)">▣ Devices</button>
-  <button onclick="showPage('usage',this)">▤ Data Usage</button>
-  <button onclick="showPage('about',this)">⚙ About AJ Network</button>
- </div>
-
- <br>
- <button class="secondary" onclick="logout()">Sign Out</button>
-
-</aside>
-
-<main class="main">
-
- <div class="topbar">
-  <div>
-   <h1 id="pageTitle">Network Overview</h1>
-   <div class="muted">AJ NETWORK Control Centre</div>
-  </div>
-  <div class="badge">● ADMINISTRATOR</div>
- </div>
-
- <div class="notice">
-  <strong class="gold">AJ NETWORK:</strong>
-  Database-connected management system.
-  Real router monitoring and internet services require network equipment
-  and further integration.
- </div>
-
- <!-- DASHBOARD -->
- <section class="page active" id="dashboard">
-
-  <div class="grid">
-
-   <div class="card">
-    <small>REGISTERED CUSTOMERS</small>
-    <div class="number gold" id="customerCount">...</div>
-    <small>Database records</small>
-   </div>
-
-   <div class="card">
-    <small>HOTSPOTS</small>
-    <div class="number green" id="hotspotCount">...</div>
-    <small>Registered hotspots</small>
-   </div>
-
-   <div class="card">
-    <small>DEVICES</small>
-    <div class="number" id="deviceCount">...</div>
-    <small>Registered devices</small>
-   </div>
-
-   <div class="card">
-    <small>DATA RECORDS</small>
-    <div class="number gold" id="usageCount">...</div>
-    <small>Usage entries</small>
-   </div>
-
+  <div class="notice">
+    Administrator access verified. Welcome to AJ NETWORK management.
   </div>
 
-  <div class="content">
+  <nav>
+    <button class="active" onclick="showPage('home',this)">Dashboard</button>
+    <button onclick="showPage('customers',this)">Customers</button>
+    <button onclick="showPage('hotspots',this)">Hotspots</button>
+    <button onclick="showPage('devices',this)">Devices</button>
+    <button onclick="showPage('usage',this)">Data Usage</button>
+    <button onclick="showPage('about',this)">About</button>
+  </nav>
 
-   <div class="section">
-    <h2>Network Infrastructure</h2>
+  <!-- DASHBOARD -->
 
-    <div class="row">
-     <span>Community Wi-Fi</span>
-     <span class="status">Planned</span>
+  <section id="home" class="page active">
+    <h2>Dashboard Overview</h2>
+
+    <div class="stats">
+      <div class="stat">Customers<strong id="totalCustomers">0</strong></div>
+      <div class="stat">Active Customers<strong id="activeCustomers">0</strong></div>
+      <div class="stat">Hotspots<strong id="totalHotspots">0</strong></div>
+      <div class="stat">Devices<strong id="totalDevices">0</strong></div>
+      <div class="stat">Usage Records<strong id="totalUsage">0</strong></div>
     </div>
 
-    <div class="row">
-     <span>Home Internet</span>
-     <span class="status">Planned</span>
+    <div class="card">
+      <h3>AJ NETWORK System</h3>
+      <p class="muted">
+        Manage customer accounts, network hotspots, connected devices
+        and data usage records from one dashboard.
+      </p>
+      <button class="green" onclick="showPage('customers',document.querySelectorAll('nav button')[1])">
+        Manage Customers
+      </button>
+    </div>
+  </section>
+
+  <!-- CUSTOMERS -->
+
+  <section id="customers" class="page">
+    <h2>Customer Account Management</h2>
+
+    <div class="stats">
+      <div class="stat">Total<strong id="customerTotal">0</strong></div>
+      <div class="stat">Pending<strong id="customerPending">0</strong></div>
+      <div class="stat">Active<strong id="customerActive">0</strong></div>
+      <div class="stat">Suspended<strong id="customerSuspended">0</strong></div>
     </div>
 
-    <div class="row">
-     <span>Business Internet</span>
-     <span class="status">Planned</span>
+    <div class="card">
+      <h3>Register New Customer</h3>
+
+      <form onsubmit="addCustomer(event)">
+        <div class="grid">
+          <div>
+            <label>Customer full name *</label>
+            <input id="customerName" required placeholder="Full name">
+          </div>
+          <div>
+            <label>Phone number *</label>
+            <input id="customerPhone" required placeholder="+256...">
+          </div>
+          <div>
+            <label>Email address</label>
+            <input id="customerEmail" type="email" placeholder="Optional">
+          </div>
+          <div>
+            <label>Address / Location</label>
+            <input id="customerAddress" placeholder="Customer location">
+          </div>
+        </div>
+
+        <button class="green">Register Customer</button>
+      </form>
     </div>
 
-    <div class="row">
-     <span>AJ Cloud & Servers</span>
-     <span class="status">Planned</span>
+    <div class="card">
+      <h3>Customer Accounts</h3>
+
+      <div class="search-row">
+        <input id="customerSearch" placeholder="Search name or phone..." oninput="renderCustomers()">
+
+        <select id="customerFilter" onchange="renderCustomers()">
+          <option value="all">All accounts</option>
+          <option value="pending">Pending</option>
+          <option value="active">Active</option>
+          <option value="suspended">Suspended</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="customerRows">
+            <tr><td colspan="5">Loading customers...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-   </div>
+  </section>
 
-   <div class="section">
-    <h2>System Information</h2>
+  <!-- HOTSPOTS -->
 
-    <div class="row">
-     <span>Database</span>
-     <span class="green">Connected</span>
+  <section id="hotspots" class="page">
+    <h2>Hotspot Management</h2>
+
+    <div class="card">
+      <h3>Register Hotspot</h3>
+
+      <form onsubmit="addHotspot(event)">
+        <label>Hotspot name</label>
+        <input id="hotspotName" required placeholder="AJ Community Wi-Fi">
+
+        <label>Location</label>
+        <input id="hotspotLocation" required placeholder="Kampala">
+
+        <label>Status</label>
+        <select id="hotspotStatus">
+          <option value="planned">Planned</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+          <option value="maintenance">Maintenance</option>
+        </select>
+
+        <button class="green">Register Hotspot</button>
+      </form>
     </div>
 
-    <div class="row">
-     <span>Admin access</span>
-     <span class="green">Verified</span>
+    <div class="card">
+      <h3>Registered Hotspots</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Location</th><th>Status</th><th>Created</th></tr>
+          </thead>
+          <tbody id="hotspotRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEVICES -->
+
+  <section id="devices" class="page">
+    <h2>Device Management</h2>
+
+    <div class="card">
+      <h3>Register Device</h3>
+
+      <form onsubmit="addDevice(event)">
+        <label>Device name *</label>
+        <input id="deviceName" required placeholder="AJ Test Router">
+
+        <label>MAC address</label>
+        <input id="deviceMac" placeholder="Optional">
+
+        <label>Customer ID</label>
+        <input id="deviceCustomer" placeholder="Optional customer UUID">
+
+        <label>Hotspot ID</label>
+        <input id="deviceHotspot" placeholder="Optional hotspot UUID">
+
+        <label>Status</label>
+        <select id="deviceStatus">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+
+        <button class="green">Register Device</button>
+      </form>
     </div>
 
-    <div class="row">
-     <span>Router connection</span>
-     <span class="status">Pending</span>
+    <div class="card">
+      <h3>Registered Devices</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Device</th><th>MAC Address</th><th>Customer</th><th>Hotspot</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="deviceRows"></tbody>
+        </table>
+      </div>
     </div>
-   </div>
+  </section>
 
-  </div>
- </section>
+  <!-- DATA USAGE -->
 
- <!-- CUSTOMERS -->
- <section class="page" id="customers">
+  <section id="usage" class="page">
+    <h2>Data Usage</h2>
 
-  <div class="section">
-   <h2>Customer Management</h2>
+    <div class="card">
+      <p class="muted">
+        Usage records currently come from your Supabase database.
+        Live router monitoring has not yet been connected.
+      </p>
 
-   <label>Customer full name</label>
-   <input id="customerName" placeholder="Enter full name">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Download (MB)</th><th>Upload (MB)</th><th>Recorded At</th></tr>
+          </thead>
+          <tbody id="usageRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
-   <label>Phone number</label>
-   <input id="customerPhone" placeholder="+256...">
+  <!-- ABOUT -->
 
-   <label>Email (optional)</label>
-   <input id="customerEmail" type="email" placeholder="Customer email">
-
-   <label>Address / Location</label>
-   <input id="customerAddress" placeholder="Customer location">
-
-   <br><br>
-   <button class="action" onclick="addCustomer()">Register Customer</button>
-
-   <div id="customerMessage" class="message"></div>
-
-   <br>
-   <h2>Registered Customers</h2>
-
-   <div class="tablewrap">
-    <table>
-     <thead>
-      <tr>
-       <th>Name</th>
-       <th>Phone</th>
-       <th>Status</th>
-      </tr>
-     </thead>
-     <tbody id="customerList"></tbody>
-    </table>
-   </div>
-  </div>
- </section>
-
- <!-- HOTSPOTS -->
- <section class="page" id="hotspots">
-
-  <div class="section">
-
-   <h2>Register New Hotspot</h2>
-
-   <label>Hotspot name</label>
-   <input id="hotspotName" placeholder="e.g. AJ Community Wi-Fi">
-
-   <label>Location</label>
-   <input id="hotspotLocation" placeholder="e.g. Kampala">
-
-   <label>Hotspot status</label>
-   <select id="hotspotStatus">
-    <option value="planned">Planned</option>
-    <option value="online">Online</option>
-    <option value="offline">Offline</option>
-    <option value="maintenance">Maintenance</option>
-   </select>
-
-   <br><br>
-   <button class="action" onclick="addHotspot()">Register Hotspot</button>
-
-   <div id="hotspotMessage" class="message"></div>
-
-   <br>
-   <h2>Registered Hotspots</h2>
-
-   <div id="hotspotList"></div>
-
-   <p class="muted">
-    Note: Registering a hotspot does not activate a physical Wi-Fi router.
-   </p>
-
-  </div>
- </section>
-
- <!-- DEVICES -->
- <section class="page" id="devices">
-
-  <div class="section">
-
-   <h2>Register Network Device</h2>
-
-   <label>Device name</label>
-   <input id="deviceName" placeholder="e.g. Customer Phone or Router">
-
-   <label>MAC address (optional)</label>
-   <input id="deviceMac" placeholder="e.g. AA:BB:CC:11:22:33">
-
-   <label>Assign to customer (optional)</label>
-   <select id="deviceCustomer">
-    <option value="">No customer selected</option>
-   </select>
-
-   <label>Assign to hotspot (optional)</label>
-   <select id="deviceHotspot">
-    <option value="">No hotspot selected</option>
-   </select>
-
-   <label>Device status</label>
-   <select id="deviceStatus">
-    <option value="active">Active</option>
-    <option value="inactive">Inactive</option>
-   </select>
-
-   <br><br>
-   <button class="action" onclick="addDevice()">Register Device</button>
-
-   <div id="deviceMessage" class="message"></div>
-
-   <br>
-   <h2>Registered Devices</h2>
-
-   <div id="deviceList"></div>
-
-  </div>
-
- </section>
-
- <!-- DATA USAGE -->
- <section class="page" id="usage">
-
-  <div class="section">
-   <h2>Data Usage Monitoring</h2>
-   <p class="muted">Usage records stored in Supabase.</p>
-   <div id="usageList"></div>
-
-   <p class="muted">
-    Live traffic monitoring requires router integration.
-   </p>
-  </div>
-
- </section>
-
- <!-- ABOUT -->
- <section class="page" id="about">
-
-  <div class="section">
-   <h2>About AJ NETWORK</h2>
-
-   <p class="muted">
-    AJ NETWORK is a technology and connectivity project focused on
-    developing internet services and digital infrastructure.
-   </p>
-
-   <div class="row">
-    <span>Project</span>
-    <span class="gold">AJ NETWORK</span>
-   </div>
-
-   <div class="row">
-    <span>Project stage</span>
-    <span class="status">Development</span>
-   </div>
-
-   <div class="row">
-    <span>Community Wi-Fi</span>
-    <span class="status">Planned</span>
-   </div>
-
-   <div class="row">
-    <span>Home Internet</span>
-    <span class="status">Planned</span>
-   </div>
-
-   <div class="row">
-    <span>Cloud Services</span>
-    <span class="status">Planned</span>
-   </div>
-
-   <br>
-
-   <p class="muted">
-    Our long-term goal is to build accessible connectivity and
-    digital services.
-   </p>
-
-  </div>
-
- </section>
-
- <div class="footer">
-  AJ NETWORK © 2026 — CONNECTING TOMORROW
- </div>
+  <section id="about" class="page">
+    <div class="card">
+      <h2>About AJ NETWORK</h2>
+      <p>
+        AJ NETWORK is a developing connectivity and technology project
+        focused on providing internet access and digital services.
+      </p>
+      <p class="muted">
+        Current system: Website dashboard, administrator authentication
+        and Supabase database.
+      </p>
+      <p class="muted">
+        Physical network equipment and live internet service
+        integration are future development stages.
+      </p>
+    </div>
+  </section>
 
 </main>
-</div>
+
+<footer>AJ NETWORK © 2026 | Network Management System</footer>
 
 <script>
+const SUPABASE_URL = "https://hdmdsxwrkwywnjzhuxzc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_eMEMMX4hXp4iXzeXauOemw_08bycD8o";
 
-// SUPABASE CONNECTION
-const SUPABASE_URL =
-"https://hdmdsxwrkwywnjzhuxzc.supabase.co";
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const SUPABASE_KEY =
-"sb_publishable_eMEMMX4hXp4iXzeXauOemw_08bycD8o";
+let customers = [];
+let devices = [];
+let hotspots = [];
+let currentUser = null;
 
-const db = window.supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
-);
-
-let customerRecords=[];
-let hotspotRecords=[];
-
-// MESSAGE FUNCTION
-function message(id,text,type){
- const el=document.getElementById(id);
- el.textContent=text;
- el.className="message "+(type||"");
+function message(id,text){
+  document.getElementById(id).innerHTML =
+    '<div class="error">'+escapeHTML(text)+'</div>';
 }
 
-// LOGIN
-async function login(){
-
- const email=document.getElementById("email").value.trim();
- const password=document.getElementById("password").value;
-
- if(!email||!password){
-  message("loginMessage","Enter your email and password.","error");
-  return;
- }
-
- message("loginMessage","Signing in...");
-
- const {data,error}=await db.auth.signInWithPassword({
-  email,password
- });
-
- if(error){
-  message("loginMessage",error.message,"error");
-  return;
- }
-
- await checkAdmin(data.user);
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
 }
 
-// ADMIN VERIFICATION
-async function checkAdmin(user){
+function showPage(page,button){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(page).classList.add("active");
 
- const {data,error}=await db.from("profiles")
-  .select("role,full_name")
-  .eq("id",user.id)
-  .single();
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  if(button) button.classList.add("active");
 
- if(error||!data||data.role!=="admin"){
+  if(page==="customers") loadCustomers();
+  if(page==="hotspots") loadHotspots();
+  if(page==="devices") loadDevices();
+  if(page==="usage") loadUsage();
+}
 
+async function login(event){
+  event.preventDefault();
+
+  const errorBox=document.getElementById("loginError");
+  errorBox.innerHTML="";
+
+  const email=document.getElementById("loginEmail").value.trim();
+  const password=document.getElementById("loginPassword").value;
+
+  const {data,error}=await db.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if(error){
+    message("loginError",error.message);
+    return;
+  }
+
+  const {data:profile,error:profileError}=await db
+    .from("profiles")
+    .select("role")
+    .eq("id",data.user.id)
+    .single();
+
+  if(profileError || profile?.role!=="admin"){
+    await db.auth.signOut();
+    message("loginError","Administrator access required.");
+    return;
+  }
+
+  currentUser=data.user;
+  openDashboard();
+}
+
+function openDashboard(){
+  document.getElementById("loginSection").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("logoutBtn").classList.remove("hidden");
+
+  loadDashboard();
+  loadCustomers();
+  loadHotspots();
+  loadDevices();
+}
+
+async function logout(){
   await db.auth.signOut();
+  location.reload();
+}
 
-  message(
-   "loginMessage",
-   "Administrator access not verified.",
-   "error"
+async function checkSession(){
+  const {data}=await db.auth.getSession();
+
+  if(!data.session) return;
+
+  const user=data.session.user;
+
+  const {data:profile,error}=await db
+    .from("profiles")
+    .select("role")
+    .eq("id",user.id)
+    .single();
+
+  if(error || profile?.role!=="admin"){
+    await db.auth.signOut();
+    return;
+  }
+
+  currentUser=user;
+  openDashboard();
+}
+
+async function loadDashboard(){
+  const tables=["customers","hotspots","devices","data_usage"];
+
+  const results=await Promise.all(
+    tables.map(table=>db.from(table).select("*",{count:"exact",head:true}))
   );
 
-  return;
- }
+  document.getElementById("totalCustomers").textContent=results[0].count ?? 0;
+  document.getElementById("totalHotspots").textContent=results[1].count ?? 0;
+  document.getElementById("totalDevices").textContent=results[2].count ?? 0;
+  document.getElementById("totalUsage").textContent=results[3].count ?? 0;
 
- document.getElementById("login").style.display="none";
- document.getElementById("app").style.display="block";
+  const {data}=await db
+    .from("customers")
+    .select("id")
+    .eq("status","active");
 
- await loadDashboard();
+  document.getElementById("activeCustomers").textContent=data?.length ?? 0;
 }
 
-// RESTORE LOGIN
-async function restoreSession(){
+/* CUSTOMER MANAGEMENT */
 
- const {data}=await db.auth.getSession();
-
- if(data.session){
-  await checkAdmin(data.session.user);
- }
-}
-
-restoreSession();
-
-// LOGOUT
-async function logout(){
- await db.auth.signOut();
- location.reload();
-}
-
-// PAGE NAVIGATION
-function showPage(id,button){
-
- document.querySelectorAll(".page").forEach(p=>{
-  p.classList.remove("active");
- });
-
- document.getElementById(id).classList.add("active");
-
- document.querySelectorAll(".nav button").forEach(b=>{
-  b.classList.remove("active");
- });
-
- button.classList.add("active");
-
- const titles={
-  dashboard:"Network Overview",
-  customers:"Customer Management",
-  hotspots:"Hotspot Management",
-  devices:"Device Management",
-  usage:"Data Usage Monitoring",
-  about:"About AJ Network"
- };
-
- document.getElementById("pageTitle").textContent=titles[id];
-}
-
-// DATABASE COUNTS
-async function getCount(table){
-
- const {count,error}=await db.from(table)
-  .select("*",{count:"exact",head:true});
-
- if(error)throw error;
-
- return count||0;
-}
-
-// DASHBOARD
-async function loadDashboard(){
-
- try{
-
-  const [c,h,d,u]=await Promise.all([
-   getCount("customers"),
-   getCount("hotspots"),
-   getCount("devices"),
-   getCount("data_usage")
-  ]);
-
-  document.getElementById("customerCount").textContent=c;
-  document.getElementById("hotspotCount").textContent=h;
-  document.getElementById("deviceCount").textContent=d;
-  document.getElementById("usageCount").textContent=u;
-
-  await Promise.all([
-   loadCustomers(),
-   loadHotspots(),
-   loadDeviceOptions(),
-   loadDevices(),
-   loadUsage()
-  ]);
-
- }catch(error){
-
-  console.error(error);
-  alert("Database error: "+error.message);
-
- }
-}
-
-// CUSTOMER LIST
 async function loadCustomers(){
+  const {data,error}=await db
+    .from("customers")
+    .select("*")
+    .order("created_at",{ascending:false});
 
- const {data,error}=await db.from("customers")
-  .select("full_name,phone,status")
-  .order("created_at",{ascending:false});
+  if(error){
+    document.getElementById("customerRows").innerHTML=
+      `<tr><td colspan="5">${escapeHTML(error.message)}</td></tr>`;
+    return;
+  }
 
- if(error)throw error;
+  customers=data || [];
+  renderCustomers();
+  updateCustomerStats();
+}
 
- const list=document.getElementById("customerList");
- list.innerHTML="";
+function updateCustomerStats(){
+  document.getElementById("customerTotal").textContent=customers.length;
 
- data.forEach(c=>{
+  document.getElementById("customerPending").textContent=
+    customers.filter(c=>c.status==="pending").length;
 
-  const tr=document.createElement("tr");
+  document.getElementById("customerActive").textContent=
+    customers.filter(c=>c.status==="active").length;
 
-  [c.full_name,c.phone,c.status].forEach(value=>{
+  document.getElementById("customerSuspended").textContent=
+    customers.filter(c=>c.status==="suspended").length;
 
-   const td=document.createElement("td");
-   td.textContent=value||"-";
-   tr.appendChild(td);
+  document.getElementById("activeCustomers").textContent=
+    customers.filter(c=>c.status==="active").length;
 
+  document.getElementById("totalCustomers").textContent=customers.length;
+}
+
+function renderCustomers(){
+  const search=(document.getElementById("customerSearch")?.value || "").toLowerCase();
+  const filter=document.getElementById("customerFilter")?.value || "all";
+
+  const filtered=customers.filter(c=>{
+    const matchesSearch=
+      (c.full_name || "").toLowerCase().includes(search) ||
+      (c.phone || "").toLowerCase().includes(search);
+
+    const matchesStatus=filter==="all" || c.status===filter;
+
+    return matchesSearch && matchesStatus;
   });
 
-  list.appendChild(tr);
+  const rows=document.getElementById("customerRows");
 
- });
+  if(!filtered.length){
+    rows.innerHTML='<tr><td colspan="5">No matching customers found.</td></tr>';
+    return;
+  }
 
+  rows.innerHTML=filtered.map(c=>{
+    const statusClass=c.status==="active"
+      ? "active-status"
+      : c.status==="suspended" ? "suspended" : "pending";
+
+    let statusButton="";
+
+    if(c.status==="pending"){
+      statusButton=`<button class="green" onclick="changeCustomerStatus('${c.id}','active')">Activate</button>`;
+    }else if(c.status==="active"){
+      statusButton=`<button class="secondary" onclick="changeCustomerStatus('${c.id}','suspended')">Suspend</button>`;
+    }else{
+      statusButton=`<button class="green" onclick="changeCustomerStatus('${c.id}','active')">Reactivate</button>`;
+    }
+
+    return `
+      <tr>
+        <td>${escapeHTML(c.full_name)}</td>
+        <td>${escapeHTML(c.phone)}</td>
+        <td>${escapeHTML(c.email || "-")}</td>
+        <td><span class="badge ${statusClass}">${escapeHTML(c.status)}</span></td>
+        <td>
+          <div class="actions">
+            ${statusButton}
+            <button class="secondary" onclick="editCustomer('${c.id}')">Edit</button>
+            <button class="danger" onclick="deleteCustomer('${c.id}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
 }
 
-// ADD CUSTOMER
-async function addCustomer(){
+async function addCustomer(event){
+  event.preventDefault();
 
- const full_name=document.getElementById("customerName").value.trim();
- const phone=document.getElementById("customerPhone").value.trim();
- const email=document.getElementById("customerEmail").value.trim();
- const address=document.getElementById("customerAddress").value.trim();
+  const customer={
+    full_name:document.getElementById("customerName").value.trim(),
+    phone:document.getElementById("customerPhone").value.trim(),
+    email:document.getElementById("customerEmail").value.trim() || null,
+    address:document.getElementById("customerAddress").value.trim() || null
+  };
 
- if(!full_name||!phone){
-  message("customerMessage","Name and phone number are required.","error");
-  return;
- }
+  const {error}=await db.from("customers").insert([customer]);
 
- const {error}=await db.from("customers").insert([{
-  full_name,
-  phone,
-  email:email||null,
-  address:address||null
- }]);
+  if(error){
+    alert("Customer registration failed: "+error.message);
+    return;
+  }
 
- if(error){
-  message("customerMessage",error.message,"error");
-  return;
- }
+  event.target.reset();
+  alert("Customer successfully registered. Account status: Pending.");
 
- message("customerMessage","Customer successfully registered!","success");
-
- ["customerName","customerPhone","customerEmail","customerAddress"]
- .forEach(id=>{
-  document.getElementById(id).value="";
- });
-
- await loadDashboard();
+  await loadCustomers();
+  await loadDashboard();
 }
 
-// ADD HOTSPOT
-async function addHotspot(){
+async function changeCustomerStatus(id,newStatus){
+  const customer=customers.find(c=>c.id===id);
+  if(!customer) return;
 
- const name=document.getElementById("hotspotName").value.trim();
- const location=document.getElementById("hotspotLocation").value.trim();
- const status=document.getElementById("hotspotStatus").value;
+  const action={
+    active:"activate",
+    suspended:"suspend"
+  }[newStatus];
 
- if(!name||!location){
-  message("hotspotMessage","Enter hotspot name and location.","error");
-  return;
- }
+  if(!confirm(`Are you sure you want to ${action} ${customer.full_name}?`)){
+    return;
+  }
 
- const {error}=await db.from("hotspots").insert([{
-  name,
-  location,
-  status
- }]);
+  const {error}=await db
+    .from("customers")
+    .update({status:newStatus})
+    .eq("id",id);
 
- if(error){
-  message("hotspotMessage",error.message,"error");
-  return;
- }
+  if(error){
+    alert("Status update failed: "+error.message);
+    return;
+  }
 
- message("hotspotMessage","Hotspot successfully registered!","success");
-
- document.getElementById("hotspotName").value="";
- document.getElementById("hotspotLocation").value="";
- document.getElementById("hotspotStatus").value="planned";
-
- await loadDashboard();
+  alert("Customer account updated successfully.");
+  await loadCustomers();
+  await loadDashboard();
 }
 
-// LOAD HOTSPOTS
+async function editCustomer(id){
+  const customer=customers.find(c=>c.id===id);
+  if(!customer) return;
+
+  const name=prompt("Customer full name:",customer.full_name);
+  if(name===null) return;
+
+  const phone=prompt("Customer phone:",customer.phone);
+  if(phone===null) return;
+
+  const email=prompt("Customer email:",customer.email || "");
+  if(email===null) return;
+
+  const address=prompt("Customer address:",customer.address || "");
+  if(address===null) return;
+
+  if(!name.trim() || !phone.trim()){
+    alert("Name and phone number are required.");
+    return;
+  }
+
+  const {error}=await db
+    .from("customers")
+    .update({
+      full_name:name.trim(),
+      phone:phone.trim(),
+      email:email.trim() || null,
+      address:address.trim() || null
+    })
+    .eq("id",id);
+
+  if(error){
+    alert("Customer update failed: "+error.message);
+    return;
+  }
+
+  alert("Customer details updated.");
+  await loadCustomers();
+}
+
+async function deleteCustomer(id){
+  const customer=customers.find(c=>c.id===id);
+  if(!customer) return;
+
+  if(!confirm(`Permanently delete ${customer.full_name}? This cannot be undone.`)){
+    return;
+  }
+
+  const {error}=await db
+    .from("customers")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    alert("Customer deletion failed: "+error.message);
+    return;
+  }
+
+  alert("Customer account deleted.");
+  await loadCustomers();
+  await loadDashboard();
+}
+
+/* HOTSPOTS */
+
+async function addHotspot(event){
+  event.preventDefault();
+
+  const hotspot={
+    name:document.getElementById("hotspotName").value.trim(),
+    location:document.getElementById("hotspotLocation").value.trim(),
+    status:document.getElementById("hotspotStatus").value
+  };
+
+  const {error}=await db.from("hotspots").insert([hotspot]);
+
+  if(error){
+    alert("Hotspot registration failed: "+error.message);
+    return;
+  }
+
+  event.target.reset();
+  alert("Hotspot registered successfully.");
+
+  await loadHotspots();
+  await loadDashboard();
+}
+
 async function loadHotspots(){
+  const {data,error}=await db
+    .from("hotspots")
+    .select("*")
+    .order("created_at",{ascending:false});
 
- const {data,error}=await db.from("hotspots")
-  .select("id,name,location,status")
-  .order("created_at",{ascending:false});
+  const rows=document.getElementById("hotspotRows");
 
- if(error)throw error;
+  if(error){
+    rows.innerHTML=`<tr><td colspan="4">${escapeHTML(error.message)}</td></tr>`;
+    return;
+  }
 
- hotspotRecords=data||[];
+  hotspots=data || [];
 
- const el=document.getElementById("hotspotList");
- el.innerHTML="";
+  rows.innerHTML=hotspots.map(h=>`
+    <tr>
+      <td>${escapeHTML(h.name)}</td>
+      <td>${escapeHTML(h.location)}</td>
+      <td><span class="badge ${escapeHTML(h.status)}">${escapeHTML(h.status)}</span></td>
+      <td>${h.created_at ? new Date(h.created_at).toLocaleDateString() : "-"}</td>
+    </tr>
+  `).join("") || '<tr><td colspan="4">No hotspots registered.</td></tr>';
 
- hotspotRecords.forEach(item=>{
-
-  const row=document.createElement("div");
-  row.className="row";
-
-  const name=document.createElement("span");
-  name.textContent=item.name+" — "+item.location;
-
-  const status=document.createElement("span");
-  status.className="status";
-  status.textContent=item.status;
-
-  row.append(name,status);
-  el.appendChild(row);
-
- });
-
- if(!hotspotRecords.length){
-  el.textContent="No hotspots registered yet.";
- }
-
+  document.getElementById("totalHotspots").textContent=hotspots.length;
 }
 
-// LOAD CUSTOMER AND HOTSPOT OPTIONS
-async function loadDeviceOptions(){
+/* DEVICES */
 
- const [customersResult,hotspotsResult]=await Promise.all([
+async function addDevice(event){
+  event.preventDefault();
 
-  db.from("customers")
-   .select("id,full_name,phone")
-   .order("created_at",{ascending:false}),
+  const device={
+    device_name:document.getElementById("deviceName").value.trim(),
+    mac_address:document.getElementById("deviceMac").value.trim() || null,
+    customer_id:document.getElementById("deviceCustomer").value.trim() || null,
+    hotspot_id:document.getElementById("deviceHotspot").value.trim() || null,
+    status:document.getElementById("deviceStatus").value
+  };
 
-  db.from("hotspots")
-   .select("id,name,location")
-   .order("created_at",{ascending:false})
+  const {error}=await db.from("devices").insert([device]);
 
- ]);
+  if(error){
+    alert("Device registration failed: "+error.message);
+    return;
+  }
 
- if(customersResult.error)throw customersResult.error;
- if(hotspotsResult.error)throw hotspotsResult.error;
+  event.target.reset();
+  alert("Device registered successfully.");
 
- customerRecords=customersResult.data||[];
- hotspotRecords=hotspotsResult.data||[];
-
- const customerSelect=document.getElementById("deviceCustomer");
- const hotspotSelect=document.getElementById("deviceHotspot");
-
- customerSelect.innerHTML='<option value="">No customer selected</option>';
-
- customerRecords.forEach(customer=>{
-
-  const option=document.createElement("option");
-  option.value=customer.id;
-  option.textContent=customer.full_name+" — "+customer.phone;
-
-  customerSelect.appendChild(option);
-
- });
-
- hotspotSelect.innerHTML='<option value="">No hotspot selected</option>';
-
- hotspotRecords.forEach(hotspot=>{
-
-  const option=document.createElement("option");
-  option.value=hotspot.id;
-  option.textContent=hotspot.name+" — "+hotspot.location;
-
-  hotspotSelect.appendChild(option);
-
- });
-
+  await loadDevices();
+  await loadDashboard();
 }
 
-// ADD DEVICE
-async function addDevice(){
-
- const device_name=document.getElementById("deviceName").value.trim();
- const mac_address=document.getElementById("deviceMac").value.trim();
- const customer_id=document.getElementById("deviceCustomer").value;
- const hotspot_id=document.getElementById("deviceHotspot").value;
- const status=document.getElementById("deviceStatus").value;
-
- if(!device_name){
-  message("deviceMessage","Enter the device name.","error");
-  return;
- }
-
- const deviceData={
-  device_name,
-  mac_address:mac_address||null,
-  customer_id:customer_id||null,
-  hotspot_id:hotspot_id||null,
-  status
- };
-
- const {error}=await db.from("devices").insert([deviceData]);
-
- if(error){
-  message("deviceMessage",error.message,"error");
-  return;
- }
-
- message("deviceMessage","Device successfully registered!","success");
-
- document.getElementById("deviceName").value="";
- document.getElementById("deviceMac").value="";
- document.getElementById("deviceCustomer").value="";
- document.getElementById("deviceHotspot").value="";
- document.getElementById("deviceStatus").value="active";
-
- await loadDashboard();
-}
-
-// LOAD DEVICES
 async function loadDevices(){
+  const {data,error}=await db
+    .from("devices")
+    .select("*")
+    .order("created_at",{ascending:false});
 
- const {data,error}=await db.from("devices")
-  .select("id,device_name,mac_address,status,customer_id,hotspot_id")
-  .order("created_at",{ascending:false});
+  const rows=document.getElementById("deviceRows");
 
- if(error)throw error;
+  if(error){
+    rows.innerHTML=`<tr><td colspan="6">${escapeHTML(error.message)}</td></tr>`;
+    return;
+  }
 
- const el=document.getElementById("deviceList");
- el.innerHTML="";
+  devices=data || [];
 
- data.forEach(item=>{
+  rows.innerHTML=devices.map(d=>`
+    <tr>
+      <td>${escapeHTML(d.device_name)}</td>
+      <td>${escapeHTML(d.mac_address || "-")}</td>
+      <td>${escapeHTML(d.customer_id || "-")}</td>
+      <td>${escapeHTML(d.hotspot_id || "-")}</td>
+      <td><span class="badge ${d.status==="active"?"active-status":"suspended"}">${escapeHTML(d.status)}</span></td>
+      <td>
+        <div class="actions">
+          <button class="secondary" onclick="updateDeviceStatus('${d.id}','${d.status==="active"?"inactive":"active"}')">
+            ${d.status==="active"?"Deactivate":"Activate"}
+          </button>
+          <button class="danger" onclick="deleteDevice('${d.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join("") || '<tr><td colspan="6">No devices registered.</td></tr>';
 
-  const row=document.createElement("div");
-  row.style.padding="14px 0";
-  row.style.borderBottom="1px solid var(--border)";
-
-  const name=document.createElement("strong");
-  name.textContent=item.device_name;
-
-  const info=document.createElement("div");
-  info.className="muted";
-
-  const customer=customerRecords.find(c=>c.id===item.customer_id);
-  const hotspot=hotspotRecords.find(h=>h.id===item.hotspot_id);
-
-  const parts=[item.mac_address||"No MAC address"];
-
-  if(customer)parts.push("Customer: "+customer.full_name);
-  if(hotspot)parts.push("Hotspot: "+hotspot.name);
-
-  info.textContent=parts.join(" | ");
-
-  const actions=document.createElement("div");
-  actions.className="device-actions";
-
-  const status=document.createElement("select");
-
-  ["active","inactive"].forEach(value=>{
-   const option=document.createElement("option");
-   option.value=value;
-   option.textContent=value.charAt(0).toUpperCase()+value.slice(1);
-   status.appendChild(option);
-  });
-
-  status.value=item.status;
-
-  const updateButton=document.createElement("button");
-  updateButton.className="secondary";
-  updateButton.textContent="Update Status";
-  updateButton.onclick=()=>updateDeviceStatus(item.id,status.value);
-
-  const deleteButton=document.createElement("button");
-  deleteButton.className="danger";
-  deleteButton.textContent="Delete";
-  deleteButton.onclick=()=>deleteDevice(item.id,item.device_name);
-
-  actions.append(status,updateButton,deleteButton);
-
-  row.append(name,info,actions);
-  el.appendChild(row);
-
- });
-
- if(!data.length){
-  el.textContent="No devices registered yet.";
- }
-
+  document.getElementById("totalDevices").textContent=devices.length;
 }
 
-// UPDATE DEVICE STATUS
 async function updateDeviceStatus(id,newStatus){
+  const {error}=await db
+    .from("devices")
+    .update({status:newStatus})
+    .eq("id",id);
 
- if(!["active","inactive"].includes(newStatus)){
-  alert("Invalid device status.");
-  return;
- }
+  if(error){
+    alert(error.message);
+    return;
+  }
 
- const {error}=await db.from("devices")
-  .update({status:newStatus})
-  .eq("id",id);
-
- if(error){
-  alert("Could not update device: "+error.message);
-  return;
- }
-
- alert("Device status updated successfully!");
-
- await loadDashboard();
+  await loadDevices();
 }
 
-// DELETE DEVICE
-async function deleteDevice(id,deviceName){
+async function deleteDevice(id){
+  if(!confirm("Delete this device?")) return;
 
- const confirmed=confirm(
-  "Are you sure you want to delete "+deviceName+"? This cannot be undone."
- );
+  const {error}=await db.from("devices").delete().eq("id",id);
 
- if(!confirmed)return;
+  if(error){
+    alert(error.message);
+    return;
+  }
 
- const {error}=await db.from("devices")
-  .delete()
-  .eq("id",id);
-
- if(error){
-  alert("Could not delete device: "+error.message);
-  return;
- }
-
- alert("Device deleted successfully!");
-
- await loadDashboard();
+  await loadDevices();
+  await loadDashboard();
 }
 
-// LOAD DATA USAGE
+/* DATA USAGE */
+
 async function loadUsage(){
+  const rows=document.getElementById("usageRows");
 
- const {data,error}=await db.from("data_usage")
-  .select("download_mb,upload_mb,recorded_at")
-  .order("recorded_at",{ascending:false})
-  .limit(30);
+  const {data,error}=await db
+    .from("data_usage")
+    .select("download_mb,upload_mb,recorded_at")
+    .order("recorded_at",{ascending:false});
 
- if(error)throw error;
+  if(error){
+    rows.innerHTML=`<tr><td colspan="3">${escapeHTML(error.message)}</td></tr>`;
+    return;
+  }
 
- const el=document.getElementById("usageList");
- el.innerHTML="";
+  rows.innerHTML=(data || []).map(u=>`
+    <tr>
+      <td>${escapeHTML(u.download_mb)}</td>
+      <td>${escapeHTML(u.upload_mb)}</td>
+      <td>${u.recorded_at ? new Date(u.recorded_at).toLocaleString() : "-"}</td>
+    </tr>
+  `).join("") || '<tr><td colspan="3">No usage records available.</td></tr>';
 
- data.forEach(item=>{
-
-  const row=document.createElement("div");
-  row.className="row";
-
-  row.textContent=
-   "Download: "+item.download_mb+" MB | Upload: "+
-   item.upload_mb+" MB | "+
-   new Date(item.recorded_at).toLocaleString();
-
-  el.appendChild(row);
-
- });
-
- if(!data.length){
-  el.textContent="No usage records yet.";
- }
-
+  document.getElementById("totalUsage").textContent=data?.length ?? 0;
 }
 
+checkSession();
 </script>
 
 </body>
