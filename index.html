@@ -169,6 +169,26 @@ border:1px solid var(--border);
 padding:9px 12px;
 border-radius:7px
 }
+.danger{
+background:#4b2028;
+color:#ffaaaa;
+border:1px solid #74343d;
+padding:8px 11px;
+border-radius:7px
+}
+.device-actions{
+display:flex;
+align-items:center;
+gap:7px;
+flex-wrap:wrap;
+margin-top:10px
+}
+.device-actions select{
+width:auto;
+min-width:110px;
+padding:8px;
+margin:0
+}
 .tablewrap{overflow-x:auto}
 table{
 width:100%;
@@ -558,9 +578,8 @@ const db = window.supabase.createClient(
  SUPABASE_KEY
 );
 
-// CACHE FOR CUSTOMER AND HOTSPOT NAMES
-let customerRecords = [];
-let hotspotRecords = [];
+let customerRecords=[];
+let hotspotRecords=[];
 
 // MESSAGE FUNCTION
 function message(id,text,type){
@@ -844,7 +863,7 @@ async function loadHotspots(){
 
 }
 
-// LOAD CUSTOMER AND HOTSPOT DROPDOWNS
+// LOAD CUSTOMER AND HOTSPOT OPTIONS
 async function loadDeviceOptions(){
 
  const [customersResult,hotspotsResult]=await Promise.all([
@@ -932,14 +951,13 @@ async function addDevice(){
  document.getElementById("deviceStatus").value="active";
 
  await loadDashboard();
-
 }
 
 // LOAD DEVICES
 async function loadDevices(){
 
  const {data,error}=await db.from("devices")
-  .select("device_name,mac_address,status,customer_id,hotspot_id")
+  .select("id,device_name,mac_address,status,customer_id,hotspot_id")
   .order("created_at",{ascending:false});
 
  if(error)throw error;
@@ -950,9 +968,8 @@ async function loadDevices(){
  data.forEach(item=>{
 
   const row=document.createElement("div");
-  row.className="row";
-
-  const details=document.createElement("div");
+  row.style.padding="14px 0";
+  row.style.borderBottom="1px solid var(--border)";
 
   const name=document.createElement("strong");
   name.textContent=item.device_name;
@@ -963,22 +980,40 @@ async function loadDevices(){
   const customer=customerRecords.find(c=>c.id===item.customer_id);
   const hotspot=hotspotRecords.find(h=>h.id===item.hotspot_id);
 
-  const parts=[];
-
-  parts.push(item.mac_address||"No MAC address");
+  const parts=[item.mac_address||"No MAC address"];
 
   if(customer)parts.push("Customer: "+customer.full_name);
   if(hotspot)parts.push("Hotspot: "+hotspot.name);
 
   info.textContent=parts.join(" | ");
 
-  details.append(name,info);
+  const actions=document.createElement("div");
+  actions.className="device-actions";
 
-  const status=document.createElement("span");
-  status.className=item.status==="active"?"green":"status";
-  status.textContent=item.status;
+  const status=document.createElement("select");
 
-  row.append(details,status);
+  ["active","inactive"].forEach(value=>{
+   const option=document.createElement("option");
+   option.value=value;
+   option.textContent=value.charAt(0).toUpperCase()+value.slice(1);
+   status.appendChild(option);
+  });
+
+  status.value=item.status;
+
+  const updateButton=document.createElement("button");
+  updateButton.className="secondary";
+  updateButton.textContent="Update Status";
+  updateButton.onclick=()=>updateDeviceStatus(item.id,status.value);
+
+  const deleteButton=document.createElement("button");
+  deleteButton.className="danger";
+  deleteButton.textContent="Delete";
+  deleteButton.onclick=()=>deleteDevice(item.id,item.device_name);
+
+  actions.append(status,updateButton,deleteButton);
+
+  row.append(name,info,actions);
   el.appendChild(row);
 
  });
@@ -987,6 +1022,51 @@ async function loadDevices(){
   el.textContent="No devices registered yet.";
  }
 
+}
+
+// UPDATE DEVICE STATUS
+async function updateDeviceStatus(id,newStatus){
+
+ if(!["active","inactive"].includes(newStatus)){
+  alert("Invalid device status.");
+  return;
+ }
+
+ const {error}=await db.from("devices")
+  .update({status:newStatus})
+  .eq("id",id);
+
+ if(error){
+  alert("Could not update device: "+error.message);
+  return;
+ }
+
+ alert("Device status updated successfully!");
+
+ await loadDashboard();
+}
+
+// DELETE DEVICE
+async function deleteDevice(id,deviceName){
+
+ const confirmed=confirm(
+  "Are you sure you want to delete "+deviceName+"? This cannot be undone."
+ );
+
+ if(!confirmed)return;
+
+ const {error}=await db.from("devices")
+  .delete()
+  .eq("id",id);
+
+ if(error){
+  alert("Could not delete device: "+error.message);
+  return;
+ }
+
+ alert("Device deleted successfully!");
+
+ await loadDashboard();
 }
 
 // LOAD DATA USAGE
