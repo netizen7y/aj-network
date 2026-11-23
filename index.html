@@ -2,290 +2,400 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AJ NETWORK | Control Centre</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  --bg:#080d18;
-  --panel:#111a2b;
-  --panel2:#172238;
-  --gold:#e6b84c;
-  --green:#16c784;
-  --text:#f4f6fb;
-  --muted:#91a0b8;
-  --border:#26334a;
+:root{
+--bg:#080d18;--panel:#111a2b;--panel2:#19263b;
+--gold:#e6b84c;--green:#16c784;--text:#f4f6fb;
+--muted:#91a0b8;--border:#29364d;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Arial,sans-serif;display:flex;min-height:100vh
-}
-.sidebar{
-  width:245px;background:#0d1525;border-right:1px solid var(--border);
-  padding:24px 16px;position:fixed;inset:0 auto 0 0
-}
-.logo{font-size:25px;font-weight:900;color:var(--gold);margin-bottom:5px}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:Arial,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+#login{max-width:420px;margin:65px auto;padding:25px}
+.box,.card,.section{background:var(--panel);border:1px solid var(--border);
+border-radius:12px;padding:20px}
+.logo{font-size:27px;font-weight:900;color:var(--gold);margin-bottom:5px}
 .logo span{color:white}
-.tagline{font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:35px}
-.nav-title{font-size:10px;color:var(--muted);margin:22px 10px 10px}
-.nav button{
-  width:100%;padding:13px 12px;margin:3px 0;text-align:left;
-  color:#c5cede;background:transparent;border:0;border-radius:8px;
-  cursor:pointer;font-size:14px
-}
+.subtitle{color:var(--muted);font-size:13px;margin-bottom:25px}
+label{display:block;color:var(--muted);font-size:12px;margin-top:15px}
+input{width:100%;padding:13px;margin-top:7px;background:#0b1424;
+border:1px solid var(--border);border-radius:7px;color:white}
+.action{background:var(--gold);color:#101827;border:0;border-radius:7px;
+padding:12px 16px;font-weight:bold}
+.loginbtn{width:100%;margin-top:20px}
+.message{font-size:13px;margin-top:15px;line-height:1.5}
+.error{color:#ff9292}.success{color:var(--green)}
+#app{display:none}
+.sidebar{position:fixed;inset:0 auto 0 0;width:220px;
+background:#0d1525;border-right:1px solid var(--border);padding:20px 14px}
+.tagline{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:30px}
+.nav button{width:100%;display:block;text-align:left;padding:13px;
+margin:4px 0;border:0;border-radius:8px;background:transparent;
+color:#c5cede}
 .nav button.active,.nav button:hover{background:#1b2940;color:var(--gold)}
-.main{margin-left:245px;width:calc(100% - 245px);padding:28px}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-h1{font-size:25px;margin:0 0 7px}
-.subtitle{color:var(--muted);font-size:13px}
-.badge{background:#342b17;color:var(--gold);padding:9px 13px;border-radius:20px;font-size:11px}
-.notice{
-  background:#18253a;border:1px solid #34445e;padding:13px 15px;
-  border-radius:10px;margin:24px 0;color:#c5d0e1;font-size:12px;line-height:1.6
-}
-.notice strong{color:var(--gold)}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:20px 0}
-.card,.section{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:12px;padding:19px
-}
-.card small{color:var(--muted);font-size:12px}
-.number{font-size:29px;font-weight:bold;margin:13px 0 5px}
-.card .note{font-size:11px;color:var(--muted)}
-.green{color:var(--green)}
-.gold{color:var(--gold)}
-.content{display:grid;grid-template-columns:1.5fr 1fr;gap:15px}
-.section h2{font-size:16px;margin:0 0 17px}
-.status{display:inline-block;padding:5px 9px;border-radius:20px;font-size:11px;background:#342b17;color:var(--gold)}
-.status.offline{background:#352127;color:#ff9a9a}
-.row{
-  display:flex;justify-content:space-between;align-items:center;
-  border-bottom:1px solid var(--border);padding:13px 0;font-size:13px
-}
+.main{margin-left:220px;padding:25px;max-width:1500px}
+.topbar{display:flex;justify-content:space-between;align-items:center;
+gap:12px;flex-wrap:wrap}
+h1{font-size:24px;margin:0 0 7px}
+.muted{color:var(--muted);font-size:13px}
+.badge{background:#342b17;color:var(--gold);padding:9px 12px;
+border-radius:20px;font-size:11px}
+.notice{background:#18253a;border:1px solid #34445e;padding:13px;
+border-radius:9px;margin:20px 0;color:#c5d0e1;font-size:12px;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:20px 0}
+.card small{color:var(--muted);font-size:11px}
+.number{font-size:28px;font-weight:bold;margin:12px 0}
+.green{color:var(--green)}.gold{color:var(--gold)}
+.content{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+.section h2{font-size:16px;margin:0 0 16px}
+.row{display:flex;justify-content:space-between;align-items:center;
+gap:10px;border-bottom:1px solid var(--border);padding:13px 0;font-size:13px}
 .row:last-child{border:0}
-.empty{color:var(--muted);font-size:13px;line-height:1.7}
-button.action{
-  background:var(--gold);color:#111827;border:0;padding:10px 14px;
-  border-radius:7px;font-weight:bold;cursor:pointer
-}
-button.secondary{
-  background:var(--panel2);color:var(--text);border:1px solid var(--border);
-  padding:9px 12px;border-radius:7px;cursor:pointer
-}
-input{
-  width:100%;padding:12px;background:#0b1424;color:white;
-  border:1px solid var(--border);border-radius:7px;margin:8px 0 14px
-}
-label{font-size:12px;color:var(--muted)}
-.page{display:none}
-.page.active{display:block}
-.footer{text-align:center;color:var(--muted);font-size:11px;margin-top:35px}
-@media(max-width:900px){
- .sidebar{width:190px}.main{margin-left:190px;width:calc(100% - 190px)}
- .grid{grid-template-columns:repeat(2,1fr)}
- .content{grid-template-columns:1fr}
-}
-@media(max-width:600px){
- body{display:block}
- .sidebar{position:relative;width:100%;height:auto;padding:15px}
- .logo{font-size:21px}.tagline{margin-bottom:12px}
- .nav{display:flex;overflow-x:auto;gap:5px}
- .nav-title{display:none}
- .nav button{white-space:nowrap;width:auto;padding:10px}
- .main{margin:0;width:100%;padding:18px}
- .grid{gap:9px}.card{padding:13px}.number{font-size:24px}
+.status{color:var(--gold);font-size:11px}
+.page{display:none}.page.active{display:block}
+.secondary{background:var(--panel2);color:white;border:1px solid var(--border);
+padding:9px 12px;border-radius:7px}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:400px}
+th,td{text-align:left;padding:12px 8px;border-bottom:1px solid var(--border)}
+th{color:var(--muted)}
+.footer{text-align:center;color:var(--muted);font-size:11px;margin:30px 0}
+@media(max-width:850px){
+.sidebar{position:relative;width:100%;height:auto;padding:13px}
+.tagline{margin-bottom:10px}
+.nav{display:flex;overflow-x:auto;gap:4px}
+.nav button{white-space:nowrap;width:auto;padding:10px}
+.main{margin:0;padding:17px}
+.grid{grid-template-columns:repeat(2,1fr)}
+.content{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
+<div id="login">
+ <div class="box">
   <div class="logo">AJ <span>NETWORK</span></div>
-  <div class="tagline">CONNECTING TOMORROW</div>
+  <div class="subtitle">ADMINISTRATION CONTROL CENTRE</div>
+  <h2>Administrator Login</h2>
+  <label>Email address</label>
+  <input id="email" type="email" placeholder="Your registered email">
+  <label>Password</label>
+  <input id="password" type="password" placeholder="Your password">
+  <button class="action loginbtn" onclick="login()">Sign In</button>
+  <div id="loginMessage" class="message"></div>
+ </div>
+</div>
 
-  <div class="nav-title">MAIN MENU</div>
-  <div class="nav">
-    <button class="active" onclick="showPage('dashboard',this)">▦ Dashboard</button>
-    <button onclick="showPage('customers',this)">♙ Customers</button>
-    <button onclick="showPage('hotspots',this)">◉ Hotspots</button>
-    <button onclick="showPage('devices',this)">▣ Devices</button>
-    <button onclick="showPage('usage',this)">▤ Data Usage</button>
-  </div>
-  <div class="nav-title">SYSTEM</div>
-  <div class="nav">
-    <button onclick="showPage('about',this)">⚙ About AJ Network</button>
-  </div>
+<div id="app">
+<aside class="sidebar">
+ <div class="logo">AJ <span>NETWORK</span></div>
+ <div class="tagline">CONNECTING TOMORROW</div>
+ <div class="nav">
+  <button class="active" onclick="showPage('dashboard',this)">▦ Dashboard</button>
+  <button onclick="showPage('customers',this)">♙ Customers</button>
+  <button onclick="showPage('hotspots',this)">◉ Hotspots</button>
+  <button onclick="showPage('devices',this)">▣ Devices</button>
+  <button onclick="showPage('usage',this)">▤ Data Usage</button>
+ </div>
+ <br>
+ <button class="secondary" onclick="logout()">Sign Out</button>
 </aside>
 
 <main class="main">
-  <div class="topbar">
-    <div>
-      <h1 id="pageTitle">Network Overview</h1>
-      <div class="subtitle">AJ NETWORK Control Centre</div>
-    </div>
-    <div class="badge">● DEVELOPMENT MODE</div>
+ <div class="topbar">
+  <div>
+   <h1 id="pageTitle">Network Overview</h1>
+   <div class="muted">AJ NETWORK Control Centre</div>
   </div>
+  <div class="badge">● ADMINISTRATOR</div>
+ </div>
 
-  <div class="notice">
-    <strong>Important:</strong> This is the first software prototype.
-    It is not yet connected to real routers, customers or internet services.
-    Live network monitoring will be added when the backend and network equipment are connected.
+ <div class="notice">
+  <strong class="gold">AJ NETWORK:</strong>
+  Database-connected management system.
+  Real router monitoring and internet services require network equipment
+  and further integration.
+ </div>
+
+ <section class="page active" id="dashboard">
+  <div class="grid">
+   <div class="card"><small>REGISTERED CUSTOMERS</small>
+    <div class="number gold" id="customerCount">...</div>
+    <small>Database records</small></div>
+   <div class="card"><small>HOTSPOTS</small>
+    <div class="number green" id="hotspotCount">...</div>
+    <small>Registered hotspots</small></div>
+   <div class="card"><small>DEVICES</small>
+    <div class="number" id="deviceCount">...</div>
+    <small>Registered devices</small></div>
+   <div class="card"><small>DATA RECORDS</small>
+    <div class="number gold" id="usageCount">...</div>
+    <small>Usage entries</small></div>
   </div>
+  <div class="content">
+   <div class="section">
+    <h2>Network Infrastructure</h2>
+    <div class="row"><span>Community Wi-Fi</span><span class="status">Planned</span></div>
+    <div class="row"><span>Home Internet</span><span class="status">Planned</span></div>
+    <div class="row"><span>Business Internet</span><span class="status">Planned</span></div>
+    <div class="row"><span>AJ Cloud & Servers</span><span class="status">Planned</span></div>
+   </div>
+   <div class="section">
+    <h2>System Information</h2>
+    <div class="row"><span>Database</span><span class="green">Connected</span></div>
+    <div class="row"><span>Admin access</span><span class="green">Verified</span></div>
+    <div class="row"><span>Router connection</span><span class="status">Pending</span></div>
+   </div>
+  </div>
+ </section>
 
-  <section class="page active" id="dashboard">
-    <div class="grid">
-      <div class="card">
-        <small>REGISTERED CUSTOMERS</small>
-        <div class="number gold" id="customerCount">0</div>
-        <div class="note">Prototype records</div>
-      </div>
-      <div class="card">
-        <small>ACTIVE HOTSPOTS</small>
-        <div class="number green">0</div>
-        <div class="note">No routers connected</div>
-      </div>
-      <div class="card">
-        <small>CONNECTED DEVICES</small>
-        <div class="number">0</div>
-        <div class="note">Awaiting network setup</div>
-      </div>
-      <div class="card">
-        <small>NETWORK STATUS</small>
-        <div class="number gold" style="font-size:21px">NOT LIVE</div>
-        <div class="note">Infrastructure pending</div>
-      </div>
-    </div>
+ <section class="page" id="customers">
+  <div class="section">
+   <h2>Customer Management</h2>
+   <label>Customer full name</label>
+   <input id="customerName" placeholder="Enter full name">
+   <label>Phone number</label>
+   <input id="customerPhone" placeholder="+256...">
+   <label>Email (optional)</label>
+   <input id="customerEmail" type="email" placeholder="Customer email">
+   <label>Address / Location</label>
+   <input id="customerAddress" placeholder="Customer location">
+   <button class="action" onclick="addCustomer()">Register Customer</button>
+   <div id="customerMessage" class="message"></div>
+   <br>
+   <h2>Registered Customers</h2>
+   <div class="tablewrap">
+    <table>
+     <thead><tr><th>Name</th><th>Phone</th><th>Status</th></tr></thead>
+     <tbody id="customerList"></tbody>
+    </table>
+   </div>
+  </div>
+ </section>
 
-    <div class="content">
-      <div class="section">
-        <h2>Network Infrastructure</h2>
-        <div class="row"><span>Community Wi-Fi</span><span class="status">Planned</span></div>
-        <div class="row"><span>Home Internet</span><span class="status">Planned</span></div>
-        <div class="row"><span>Business Internet</span><span class="status">Planned</span></div>
-        <div class="row"><span>AJ Cloud & Servers</span><span class="status">Planned</span></div>
-      </div>
-      <div class="section">
-        <h2>Development Progress</h2>
-        <div class="row"><span>Project repository</span><span class="green">Started</span></div>
-        <div class="row"><span>Control dashboard</span><span class="green">Started</span></div>
-        <div class="row"><span>Database connection</span><span class="status">Pending</span></div>
-        <div class="row"><span>Router integration</span><span class="status">Pending</span></div>
-      </div>
-    </div>
-  </section>
+ <section class="page" id="hotspots">
+  <div class="section">
+   <h2>Hotspot Management</h2>
+   <p class="muted">Registered hotspot records from the database.</p>
+   <div id="hotspotList"></div>
+   <p class="muted">No physical router is connected yet.</p>
+  </div>
+ </section>
 
-  <section class="page" id="customers">
-    <div class="section">
-      <h2>Customer Management</h2>
-      <p class="empty">Register test customer records in this prototype. These records are stored in this browser only, not in a shared database.</p>
-      <label>Customer name</label>
-      <input id="customerName" placeholder="Enter customer name">
-      <label>Phone number</label>
-      <input id="customerPhone" placeholder="+256...">
-      <button class="action" onclick="addCustomer()">Add Customer</button>
-      <div id="customerList" style="margin-top:20px"></div>
-    </div>
-  </section>
+ <section class="page" id="devices">
+  <div class="section">
+   <h2>Device Management</h2>
+   <p class="muted">Registered network devices.</p>
+   <div id="deviceList"></div>
+  </div>
+ </section>
 
-  <section class="page" id="hotspots">
-    <div class="section">
-      <h2>Hotspot Management</h2>
-      <p class="empty">This section will eventually manage AJ NETWORK Wi-Fi access points.</p>
-      <div class="row"><span>Community hotspot</span><span class="status">Not connected</span></div>
-      <div class="row"><span>Home hotspot</span><span class="status">Not connected</span></div>
-      <div class="row"><span>Business hotspot</span><span class="status">Not connected</span></div>
-      <p class="empty">Router integration will be developed in a later phase.</p>
-    </div>
-  </section>
+ <section class="page" id="usage">
+  <div class="section">
+   <h2>Data Usage Monitoring</h2>
+   <p class="muted">Usage records stored in Supabase.</p>
+   <div id="usageList"></div>
+   <p class="muted">Live traffic monitoring will require router integration.</p>
+  </div>
+ </section>
 
-  <section class="page" id="devices">
-    <div class="section">
-      <h2>Connected Devices</h2>
-      <p class="empty">No live devices are being monitored yet. This feature will require a connected router and network management backend.</p>
-    </div>
-  </section>
-
-  <section class="page" id="usage">
-    <div class="section">
-      <h2>Data Usage Monitoring</h2>
-      <p class="empty">Live upload, download and customer data consumption statistics will appear here after network integration.</p>
-      <div class="row"><span>Download traffic</span><span class="status">Awaiting data</span></div>
-      <div class="row"><span>Upload traffic</span><span class="status">Awaiting data</span></div>
-      <div class="row"><span>Customer data balances</span><span class="status">Not configured</span></div>
-    </div>
-  </section>
-
-  <section class="page" id="about">
-    <div class="section">
-      <h2>About AJ NETWORK</h2>
-      <p class="empty">
-        AJ NETWORK is a technology and connectivity project being developed in Uganda.
-        Its long-term vision is to build digital infrastructure and provide connectivity
-        solutions to communities, homes and businesses.
-      </p>
-      <div class="row"><span>Project</span><span class="gold">AJ NETWORK</span></div>
-      <div class="row"><span>Initial market</span><span>Uganda</span></div>
-      <div class="row"><span>Current stage</span><span class="status">Development</span></div>
-      <div class="row"><span>Future services</span><span>Wi-Fi • Cloud • Servers</span></div>
-    </div>
-  </section>
-
-  <div class="footer">AJ NETWORK © 2026 — CONNECTING TOMORROW</div>
+ <div class="footer">AJ NETWORK © 2026 — CONNECTING TOMORROW</div>
 </main>
+</div>
 
 <script>
-function showPage(page,button){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(page).classList.add('active');
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-  button.classList.add('active');
+const SUPABASE_URL = "https://hdmdsxwrkwywnjzhuxzc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_eMEMMX4hXp4iXzeXauOemw_08bycD8o";
 
-  const titles={
-    dashboard:'Network Overview',
-    customers:'Customer Management',
-    hotspots:'Hotspot Management',
-    devices:'Connected Devices',
-    usage:'Data Usage Monitoring',
-    about:'About AJ NETWORK'
-  };
-  document.getElementById('pageTitle').textContent=titles[page];
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+function message(id,text,type){
+ const el=document.getElementById(id);
+ el.textContent=text;
+ el.className="message "+(type||"");
 }
 
-let customers=JSON.parse(localStorage.getItem('ajCustomers')||'[]');
+async function login(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ if(!email||!password){
+  message("loginMessage","Enter your email and password.","error");
+  return;
+ }
+ message("loginMessage","Signing in...");
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){
+  message("loginMessage",error.message,"error");
+  return;
+ }
+ await checkAdmin(data.user);
+}
 
-function renderCustomers(){
-  document.getElementById('customerCount').textContent=customers.length;
-  const list=document.getElementById('customerList');
-  list.innerHTML='';
-  customers.forEach((c,i)=>{
-    const row=document.createElement('div');
-    row.className='row';
-    const info=document.createElement('span');
-    info.textContent=c.name+' — '+c.phone;
-    const remove=document.createElement('button');
-    remove.className='secondary';
-    remove.textContent='Remove';
-    remove.onclick=()=>{customers.splice(i,1);saveCustomers()};
-    row.append(info,remove);
-    list.appendChild(row);
+async function checkAdmin(user){
+ const {data,error}=await db.from("profiles")
+  .select("role,full_name").eq("id",user.id).single();
+
+ if(error||!data||data.role!=="admin"){
+  await db.auth.signOut();
+  message("loginMessage","Administrator access not verified. Contact the project administrator.","error");
+  return;
+ }
+ document.getElementById("login").style.display="none";
+ document.getElementById("app").style.display="block";
+ await loadDashboard();
+}
+
+async function restoreSession(){
+ const {data}=await db.auth.getSession();
+ if(data.session){
+  await checkAdmin(data.session.user);
+ }
+}
+restoreSession();
+
+async function logout(){
+ await db.auth.signOut();
+ location.reload();
+}
+
+function showPage(id,button){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+ button.classList.add("active");
+ const titles={
+ dashboard:"Network Overview",
+ customers:"Customer Management",
+ hotspots:"Hotspot Management",
+ devices:"Device Management",
+ usage:"Data Usage Monitoring"
+ };
+ document.getElementById("pageTitle").textContent=titles[id];
+}
+
+async function getCount(table){
+ const {count,error}=await db.from(table).select("*",{count:"exact",head:true});
+ if(error)throw error;
+ return count||0;
+}
+
+async function loadDashboard(){
+ try{
+  const [c,h,d,u]=await Promise.all([
+   getCount("customers"),getCount("hotspots"),
+   getCount("devices"),getCount("data_usage")
+  ]);
+  document.getElementById("customerCount").textContent=c;
+  document.getElementById("hotspotCount").textContent=h;
+  document.getElementById("deviceCount").textContent=d;
+  document.getElementById("usageCount").textContent=u;
+  await Promise.all([loadCustomers(),loadHotspots(),loadDevices(),loadUsage()]);
+ }catch(error){
+  alert("Database error: "+error.message);
+ }
+}
+
+async function loadCustomers(){
+ const {data,error}=await db.from("customers")
+  .select("full_name,phone,status")
+  .order("created_at",{ascending:false});
+ if(error)throw error;
+ const list=document.getElementById("customerList");
+ list.innerHTML="";
+ data.forEach(c=>{
+  const tr=document.createElement("tr");
+  [c.full_name,c.phone,c.status].forEach(value=>{
+   const td=document.createElement("td");
+   td.textContent=value||"-";
+   tr.appendChild(td);
   });
+  list.appendChild(tr);
+ });
 }
 
-function addCustomer(){
-  const name=document.getElementById('customerName').value.trim();
-  const phone=document.getElementById('customerPhone').value.trim();
-  if(!name||!phone){alert('Please enter the customer name and phone number.');return;}
-  customers.push({name,phone});
-  saveCustomers();
-  document.getElementById('customerName').value='';
-  document.getElementById('customerPhone').value='';
+async function addCustomer(){
+ const full_name=document.getElementById("customerName").value.trim();
+ const phone=document.getElementById("customerPhone").value.trim();
+ const email=document.getElementById("customerEmail").value.trim();
+ const address=document.getElementById("customerAddress").value.trim();
+
+ if(!full_name||!phone){
+  message("customerMessage","Name and phone number are required.","error");
+  return;
+ }
+
+ const {error}=await db.from("customers").insert([{
+  full_name,phone,email:email||null,address:address||null
+ }]);
+
+ if(error){
+  message("customerMessage",error.message,"error");
+  return;
+ }
+
+ message("customerMessage","Customer successfully registered!","success");
+ ["customerName","customerPhone","customerEmail","customerAddress"]
+ .forEach(id=>document.getElementById(id).value="");
+ await loadDashboard();
 }
 
-function saveCustomers(){
-  localStorage.setItem('ajCustomers',JSON.stringify(customers));
-  renderCustomers();
+async function loadHotspots(){
+ const {data,error}=await db.from("hotspots")
+  .select("name,location,status").order("created_at",{ascending:false});
+ if(error)throw error;
+ const el=document.getElementById("hotspotList");
+ el.innerHTML="";
+ data.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="row";
+  const name=document.createElement("span");
+  name.textContent=item.name+" — "+(item.location||"Location not set");
+  const status=document.createElement("span");
+  status.className="status";
+  status.textContent=item.status;
+  row.append(name,status);
+  el.appendChild(row);
+ });
+ if(!data.length)el.textContent="No hotspots registered yet.";
 }
-renderCustomers();
+
+async function loadDevices(){
+ const {data,error}=await db.from("devices")
+  .select("device_name,mac_address,status");
+ if(error)throw error;
+ const el=document.getElementById("deviceList");
+ el.innerHTML="";
+ data.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="row";
+  row.textContent=item.device_name+" — "+(item.mac_address||"No MAC address")+" — "+item.status;
+  el.appendChild(row);
+ });
+ if(!data.length)el.textContent="No devices registered yet.";
+}
+
+async function loadUsage(){
+ const {data,error}=await db.from("data_usage")
+  .select("download_mb,upload_mb,recorded_at")
+  .order("recorded_at",{ascending:false}).limit(30);
+ if(error)throw error;
+ const el=document.getElementById("usageList");
+ el.innerHTML="";
+ data.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="row";
+  row.textContent="Download: "+item.download_mb+" MB | Upload: "+
+   item.upload_mb+" MB | "+new Date(item.recorded_at).toLocaleString();
+  el.appendChild(row);
+ });
+ if(!data.length)el.textContent="No usage records yet.";
+}
 </script>
 </body>
 </html>
