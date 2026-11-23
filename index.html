@@ -410,8 +410,9 @@ padding:10px
    <label>Hotspot status</label>
    <select id="hotspotStatus">
     <option value="planned">Planned</option>
+    <option value="online">Online</option>
     <option value="offline">Offline</option>
-    <option value="active">Active</option>
+    <option value="maintenance">Maintenance</option>
    </select>
 
    <br><br>
@@ -435,9 +436,41 @@ padding:10px
  <section class="page" id="devices">
 
   <div class="section">
-   <h2>Device Management</h2>
-   <p class="muted">Registered network devices.</p>
+
+   <h2>Register Network Device</h2>
+
+   <label>Device name</label>
+   <input id="deviceName" placeholder="e.g. Customer Phone or Router">
+
+   <label>MAC address (optional)</label>
+   <input id="deviceMac" placeholder="e.g. AA:BB:CC:11:22:33">
+
+   <label>Assign to customer (optional)</label>
+   <select id="deviceCustomer">
+    <option value="">No customer selected</option>
+   </select>
+
+   <label>Assign to hotspot (optional)</label>
+   <select id="deviceHotspot">
+    <option value="">No hotspot selected</option>
+   </select>
+
+   <label>Device status</label>
+   <select id="deviceStatus">
+    <option value="active">Active</option>
+    <option value="inactive">Inactive</option>
+   </select>
+
+   <br><br>
+   <button class="action" onclick="addDevice()">Register Device</button>
+
+   <div id="deviceMessage" class="message"></div>
+
+   <br>
+   <h2>Registered Devices</h2>
+
    <div id="deviceList"></div>
+
   </div>
 
  </section>
@@ -524,6 +557,10 @@ const db = window.supabase.createClient(
  SUPABASE_URL,
  SUPABASE_KEY
 );
+
+// CACHE FOR CUSTOMER AND HOTSPOT NAMES
+let customerRecords = [];
+let hotspotRecords = [];
 
 // MESSAGE FUNCTION
 function message(id,text,type){
@@ -660,6 +697,7 @@ async function loadDashboard(){
   await Promise.all([
    loadCustomers(),
    loadHotspots(),
+   loadDeviceOptions(),
    loadDevices(),
    loadUsage()
   ]);
@@ -699,6 +737,7 @@ async function loadCustomers(){
   list.appendChild(tr);
 
  });
+
 }
 
 // ADD CUSTOMER
@@ -772,15 +811,17 @@ async function addHotspot(){
 async function loadHotspots(){
 
  const {data,error}=await db.from("hotspots")
-  .select("name,location,status")
+  .select("id,name,location,status")
   .order("created_at",{ascending:false});
 
  if(error)throw error;
 
+ hotspotRecords=data||[];
+
  const el=document.getElementById("hotspotList");
  el.innerHTML="";
 
- data.forEach(item=>{
+ hotspotRecords.forEach(item=>{
 
   const row=document.createElement("div");
   row.className="row";
@@ -797,9 +838,100 @@ async function loadHotspots(){
 
  });
 
- if(!data.length){
+ if(!hotspotRecords.length){
   el.textContent="No hotspots registered yet.";
  }
+
+}
+
+// LOAD CUSTOMER AND HOTSPOT DROPDOWNS
+async function loadDeviceOptions(){
+
+ const [customersResult,hotspotsResult]=await Promise.all([
+
+  db.from("customers")
+   .select("id,full_name,phone")
+   .order("created_at",{ascending:false}),
+
+  db.from("hotspots")
+   .select("id,name,location")
+   .order("created_at",{ascending:false})
+
+ ]);
+
+ if(customersResult.error)throw customersResult.error;
+ if(hotspotsResult.error)throw hotspotsResult.error;
+
+ customerRecords=customersResult.data||[];
+ hotspotRecords=hotspotsResult.data||[];
+
+ const customerSelect=document.getElementById("deviceCustomer");
+ const hotspotSelect=document.getElementById("deviceHotspot");
+
+ customerSelect.innerHTML='<option value="">No customer selected</option>';
+
+ customerRecords.forEach(customer=>{
+
+  const option=document.createElement("option");
+  option.value=customer.id;
+  option.textContent=customer.full_name+" — "+customer.phone;
+
+  customerSelect.appendChild(option);
+
+ });
+
+ hotspotSelect.innerHTML='<option value="">No hotspot selected</option>';
+
+ hotspotRecords.forEach(hotspot=>{
+
+  const option=document.createElement("option");
+  option.value=hotspot.id;
+  option.textContent=hotspot.name+" — "+hotspot.location;
+
+  hotspotSelect.appendChild(option);
+
+ });
+
+}
+
+// ADD DEVICE
+async function addDevice(){
+
+ const device_name=document.getElementById("deviceName").value.trim();
+ const mac_address=document.getElementById("deviceMac").value.trim();
+ const customer_id=document.getElementById("deviceCustomer").value;
+ const hotspot_id=document.getElementById("deviceHotspot").value;
+ const status=document.getElementById("deviceStatus").value;
+
+ if(!device_name){
+  message("deviceMessage","Enter the device name.","error");
+  return;
+ }
+
+ const deviceData={
+  device_name,
+  mac_address:mac_address||null,
+  customer_id:customer_id||null,
+  hotspot_id:hotspot_id||null,
+  status
+ };
+
+ const {error}=await db.from("devices").insert([deviceData]);
+
+ if(error){
+  message("deviceMessage",error.message,"error");
+  return;
+ }
+
+ message("deviceMessage","Device successfully registered!","success");
+
+ document.getElementById("deviceName").value="";
+ document.getElementById("deviceMac").value="";
+ document.getElementById("deviceCustomer").value="";
+ document.getElementById("deviceHotspot").value="";
+ document.getElementById("deviceStatus").value="active";
+
+ await loadDashboard();
 
 }
 
@@ -807,7 +939,8 @@ async function loadHotspots(){
 async function loadDevices(){
 
  const {data,error}=await db.from("devices")
-  .select("device_name,mac_address,status");
+  .select("device_name,mac_address,status,customer_id,hotspot_id")
+  .order("created_at",{ascending:false});
 
  if(error)throw error;
 
@@ -819,11 +952,33 @@ async function loadDevices(){
   const row=document.createElement("div");
   row.className="row";
 
-  row.textContent=
-   item.device_name+" — "+
-   (item.mac_address||"No MAC address")+" — "+
-   item.status;
+  const details=document.createElement("div");
 
+  const name=document.createElement("strong");
+  name.textContent=item.device_name;
+
+  const info=document.createElement("div");
+  info.className="muted";
+
+  const customer=customerRecords.find(c=>c.id===item.customer_id);
+  const hotspot=hotspotRecords.find(h=>h.id===item.hotspot_id);
+
+  const parts=[];
+
+  parts.push(item.mac_address||"No MAC address");
+
+  if(customer)parts.push("Customer: "+customer.full_name);
+  if(hotspot)parts.push("Hotspot: "+hotspot.name);
+
+  info.textContent=parts.join(" | ");
+
+  details.append(name,info);
+
+  const status=document.createElement("span");
+  status.className=item.status==="active"?"green":"status";
+  status.textContent=item.status;
+
+  row.append(details,status);
   el.appendChild(row);
 
  });
@@ -870,4 +1025,4 @@ async function loadUsage(){
 </script>
 
 </body>
- </html>
+</html>
